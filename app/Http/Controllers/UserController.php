@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Domains\Api\Services\ApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Services\ApiService;
 
 class UserController extends Controller
 {
+           // Foydalanuvchi tekshiruvi
     private function requireUserOrRedirect()
     {
         $user = session('user');
@@ -24,38 +24,37 @@ class UserController extends Controller
         $user = $this->requireUserOrRedirect();
         if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
 
-        try {
-            $resp = method_exists(ApiService::class, 'getProfileMe')
-                ? ApiService::getProfileMe()
-                : ApiService::getFromApi('profile/me');
+    $token = session('auth_token');
 
-            if (($resp['success'] ?? false) === true) {
-                $userData = $resp['data'] ?? $user;
-            } else {
-                $userData = $user; 
-            }
-            unset($userData['password']);
-            session(['user' => $userData]);
+    $response = ApiService::getFromApi('profile/me', [
+        'Authorization' => 'Bearer ' . $token,
+        'Accept'        => 'application/json',
+    ]);
 
-        } catch (\Throwable $e) {
-            Log::error('Profile fetch error', [
-                'e' => $e->getMessage(),
-                'user_id' => data_get($user, 'id'),
-            ]);
-            $userData = $user;
-        }
+    // $userData = data_get($response, 'data', []);
+    $userData = $user;
 
-        return view('user.index', compact('userData'));
+    return view('user.index', compact('userData'));
+    
     }
 
     public function data()
-    {
-        $user = $this->requireUserOrRedirect();
-        if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
+{
+    $user = $this->requireUserOrRedirect();
+    if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
 
-        $userData = $user;
-        return view('user.data', compact('userData'));
-    }
+    $token = session('auth_token');
+
+    $response = ApiService::getFromApi('profile/me', [
+        'Authorization' => 'Bearer ' . $token,
+        'Accept'        => 'application/json',
+    ]);
+
+    // $userData = data_get($response, 'data', []);
+    $userData = $user;    
+
+    return view('user.data', compact('userData'));
+}
 
     public function results()
     {
@@ -103,62 +102,53 @@ class UserController extends Controller
     }
 
     public function test_questions($chapterId)
-{
-    $user = $this->requireUserOrRedirect();
-    // 🔧 BUNI ALBATTA QAYTARING!
-    if ($user instanceof \Illuminate\Http\RedirectResponse) {
-        return $user;
-    }
-
-    // 🔧 Token bormi? (User API lar uchun shart)
-    if (!session()->has('auth_token')) {
-        return redirect()->route('login')->with('error', 'Sessiya tugagan. Qayta kiring.');
-    }
-
-    // Kichik validatsiya
-    if (!ctype_digit((string)$chapterId)) {
-        return back()->with('error', 'Noto‘g‘ri bo‘lim ID.');
-    }
-
-    try {
-        // ✅ FOYDALANUVCHI TOKENI BILAN chaqiring
-        $resp = ApiService::getFromApiForUser("test/start/{$chapterId}");
-
-        // JSON kelmagan bo‘lishi ham mumkin (masalan, 500 HTML sahifa)
-        if (!is_array($resp)) {
-            \Log::warning('Test start non-JSON response', ['chapterId' => $chapterId]);
-            return back()->with('error', 'Server javobi noto‘g‘ri.');
+    {
+        $user = $this->requireUserOrRedirect();
+        if ($user instanceof \Illuminate\Http\RedirectResponse) {
+            return $user;
+        }
+        if (!session()->has('auth_token')) {
+            return redirect()->route('login')->with('error', 'Sessiya tugagan. Qayta kiring.');
         }
 
-        if (($resp['success'] ?? false) !== true) {
-            \Log::warning('Test start failed', [
+        // Kichik validatsiya
+        if (!ctype_digit((string)$chapterId)) {
+            return back()->with('error', 'Noto‘g‘ri bo‘lim ID.');
+        }
+
+        try {
+            $resp = ApiService::postApiForUser("test/start/{$chapterId}", []);
+            if (!is_array($resp)) {
+                \Log::warning('Test start non-JSON response', ['chapterId' => $chapterId]);
+                return back()->with('error', 'Server javobi noto‘g‘ri.');
+            }
+
+            if (($resp['success'] ?? false) !== true) {
+                \Log::warning('Test start failed', [
+                    'chapterId' => $chapterId,
+                    'status'    => $resp['status'] ?? null,
+                    'message'   => $resp['message'] ?? null,
+                ]);
+                return back()->with('error', $resp['message'] ?? 'Testni yuklashda xatolik.');
+            }
+
+            $test = $resp['data'] ?? [];
+
+            $userData = $user;
+            if (is_array($userData)) {
+                unset($userData['password']); // xavfsizlik
+            }
+
+            return view('user.test-questions', compact('userData', 'test'));
+
+        } catch (\Throwable $e) {
+            \Log::error('Test load failed', [
                 'chapterId' => $chapterId,
-                'status'    => $resp['status'] ?? null,
-                'message'   => $resp['message'] ?? null,
+                'error'     => $e->getMessage(),
             ]);
-            return back()->with('error', $resp['message'] ?? 'Testni yuklashda xatolik.');
+            return back()->with('error', 'Server xatosi. Keyinroq urinib ko‘ring.');
         }
-
-        $test = $resp['data'] ?? [];
-
-        $userData = $user;
-        if (is_array($userData)) {
-            unset($userData['password']); // xavfsizlik
-        }
-
-        return view('user.test-questions', compact('userData', 'test'));
-
-    } catch (\Throwable $e) {
-        \Log::error('Test load failed', [
-            'chapterId' => $chapterId,
-            'error'     => $e->getMessage(),
-        ]);
-        // 👇 vaqtincha haqiqiy xabarni ko‘rish uchun, developmentda shu qatordan foydalaning:
-        // return back()->with('error', 'Xato: '.$e->getMessage());
-
-        return back()->with('error', 'Server xatosi. Keyinroq urinib ko‘ring.');
     }
-}
 
 
 public function test_submit(Request $request)

@@ -14381,7 +14381,7 @@ span.transparent-button:hover i {
   justify-content: flex-start;
   flex-direction: column;
   width: 100%;
-  padding: 44px 140px 50px;
+  padding: 3px 140px 20px;
   background: #fff;
   border-radius: 4px 4px 0 0;
   margin: 120px auto 0;
@@ -14433,7 +14433,7 @@ span.transparent-button:hover i {
   max-height: 100%;
 }
 .rbt-overlay-page-wrapper .breadcrumb-content-top .title {
-  font-size: 42px;
+  font-size: 36px;
 }
 @media only screen and (max-width: 767px) {
   .rbt-overlay-page-wrapper .breadcrumb-content-top .title {

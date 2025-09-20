@@ -8,7 +8,24 @@
                                         <h4 class="rbt-title-style-3">Asosiy</h4>
                                     </div>
                                     <div class="row g-5">
+
                                                 <!-- Start Single Subject  -->
+                                                <div class="col-lg-4 col-md-6 col-12">
+                                                    <div class="rbt-card variation-01 rbt-hover">
+                                                        
+                                                        <div class="rbt-card-body">
+                                                           
+                                                            <h4 class="rbt-card-title"><a href="/user/free-test">Sinov testi</a>
+                                                            </h4>
+                                                            <div class="rbt-card-bottom">
+                                                                <a class="rbt-btn btn-sm bg-primary-opacity w-100 text-center" href="/user/free-test">Test ishlash</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- End Single Subject  -->
+
+                                                 <!-- Start Single Subject  -->
                                                 <div class="col-lg-4 col-md-6 col-12">
                                                     <div class="rbt-card variation-01 rbt-hover">
                                                         
@@ -23,7 +40,7 @@
                                                     </div>
                                                 </div>
                                                 <!-- End Single Subject  -->
-<!-- Start Single Subject  -->
+                                                <!-- Start Single Subject  -->
                                                 <div class="col-lg-4 col-md-6 col-12">
                                                     <div class="rbt-card variation-01 rbt-hover">
                                                         
@@ -143,4 +160,22 @@
     }
   });
 </script>
+
+<!-- <script>
+    $.ajax({
+        url: 'https://api.ntest.uz/api/profile/me',
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + '{{ session('auth_token') }}'
+        },
+        success: function(response) {
+            console.log(response);
+            alert('Profile data: ' + JSON.stringify(response));
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);
+            alert('Failed to load profile');
+        }
+    });
+</script> -->
 @endsection

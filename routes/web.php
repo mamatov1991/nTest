@@ -16,13 +16,15 @@ Route::middleware(['web'])->group(function () {
     Route::get('/reset-password', [MainController::class, 'reset_password'])->name('reset.password');
 
     Route::get('/payment', [MainController::class, 'payment'])->name('payment');
+
+    Route::get('/news-view/{id}', [MainController::class, 'news_view'])->name('news.view')->where('id', '[0-9]+');
 });
 
 // Foydalanuvchi (faqat login bo‘lganlar uchun)
 Route::middleware(['web', 'auth.student'])
     ->prefix('user')->name('user.')
     ->group(function () {
-        Route::get('/main1',            [UserController::class, 'main1'])->name('main1');
+        Route::get('/main',            [UserController::class, 'main'])->name('main');
         Route::get('/profile',         [UserController::class, 'profile'])->name('profile');
         Route::get('/data',            [UserController::class, 'data'])->name('data');
         Route::get('/results',         [UserController::class, 'results'])->name('results');
@@ -30,7 +32,7 @@ Route::middleware(['web', 'auth.student'])
         Route::get('/invoice',         [UserController::class, 'invoice'])->name('invoice');
         Route::get('/setting',         [UserController::class, 'setting'])->name('setting');
         Route::get('/select-test-type',[UserController::class, 'select_test_type'])->name('select.test.type');
-        Route::get('/test-questions/{chapterId}', [UserController::class, 'test_questions'])->name('test.questions');
+        Route::post('/test-questions/{chapterId}', [UserController::class, 'test_questions'])->name('test.questions')->where('chapterId', '[0-9]+');
         Route::post('/test-submit', [UserController::class, 'test_submit'])->name('test.submit');
         Route::get('/test-results',    [UserController::class, 'test_results'])->name('test.results');
         Route::get('/logout',          [UserController::class, 'logout'])->name('logout');

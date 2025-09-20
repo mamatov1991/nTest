@@ -14,21 +14,30 @@ class MainController extends Controller
         return redirect()->route('user.main');
     }
 
-    return view('main.index');
+    $resp_tariffs = ApiService::getFromApi('site/tariffs');
+    $tariffs = $resp_tariffs['data'] ?? [];
+
+    $resp_stat = ApiService::getFromApi('site/statistics');
+    $ststistiks = $resp_stat['data'] ?? [];
+
+    $resp_news = ApiService::getFromApi('site/news');
+    $news = $resp_news['data'] ?? [];
+
+    return view('main.index', compact('tariffs', 'ststistiks', 'news'));
 }
 
     public function login()
-{
-    if (session()->has('auth_token') && session()->has('user')) {
-        return redirect()->route('user.main');
-    }
+    {
+        if (session()->has('auth_token') && session()->has('user')) {
+            return redirect()->route('user.main');
+        }
 
-    return response()
-        ->view('main.login')
-        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-        ->header('Pragma', 'no-cache')
-        ->header('Expires', '0');
-}
+        return response()
+            ->view('main.login')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
+    }
 
     public function loginPost(Request $request)
 {
@@ -39,7 +48,6 @@ class MainController extends Controller
 
     try {
         $resp = ApiService::postToApi('student/login', $data);
-
         if (($resp['success'] ?? false) === true) {
             $token = data_get($resp, 'data.token');
             $user  = data_get($resp, 'data.student', []);
@@ -156,4 +164,16 @@ class MainController extends Controller
             ->with('error', $errorMsg);
     }
 }
+
+public function news_view($id)
+{
+    $resp_news_single = ApiService::getFromApi('site/news/{$id}');
+    $news_single = $resp_news_single['data'] ?? [];
+
+    $resp_news = ApiService::getFromApi('site/news');
+    $news = $resp_news['data'] ?? [];
+
+    return view('main.news-view', compact('news_single', 'news'));
+}
+
 }

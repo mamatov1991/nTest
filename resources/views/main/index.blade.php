@@ -195,26 +195,27 @@
                 </div>
             </div>
             <div class="row g-5">
+            @foreach($tariffs as $tarif)
                 <!-- Start Single Pricing  -->
                 <div class="col-xl-3 col-lg-6 col-md-6 col-12">
                     <div class="pricing-table style-2">
                         <div class="pricing-header">
-                            <h3 class="title">BIR OYLIK</h3>
-                            <span class="rbt-badge mb--35">Bitta fan uchun</span>
+                            <h3 class="title">{{ $tarif['name'] }}</h3>
+                            <span class="rbt-badge mb--35">{{ $tarif['description'] }}</span>
                             <div class="price-wrap">
                                 <div class="yearly-pricing" style="display: none;">
-                                    <span class="amount">20 000</span>
+                                    <span class="amount">{{ number_format($tarif['price'], 0, '.', ' ') }}</span>
                                     <span class="duration">/so‘m</span>
                                 </div>
                                 <div class="monthly-pricing" style="display: block;">
-                                    <span class="amount">20 000</span>
+                                    <span class="amount">{{ number_format($tarif['price'], 0, '.', ' ') }}</span>
                                     <span class="duration">/so‘m</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="pricing-btn">
-                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="#">
+                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="/login">
                                 <div class="icon-reverse-wrapper">
                                     <span class="btn-text">Xarid qilish</span>
                                     <span class="btn-icon"><i class="feather-arrow-right"></i></span>
@@ -225,100 +226,7 @@
                     </div>
                 </div>
                 <!-- End Single Pricing  -->
-
-                <!-- Start Single Pricing  -->
-                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-                    <div class="pricing-table style-2 active">
-                        <div class="pricing-header">
-                            <div class="pricing-badge"><span>Ommabop</span></div>
-                            <h3 class="title">UCH OYLIK</h3>
-                            <span class="rbt-badge mb--35">Bitta fan uchun</span>
-                            <div class="price-wrap">
-                                <div class="yearly-pricing" style="display: none;">
-                                    <span class="amount">50 000</span>
-                                    <span class="duration">/so‘m</span>
-                                </div>
-                                <div class="monthly-pricing" style="display: block;">
-                                    <span class="amount">50 000</span>
-                                    <span class="duration">/so‘m</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pricing-btn">
-                            <a class="rbt-btn hover-icon-reverse w-100" href="#">
-                                <div class="icon-reverse-wrapper">
-                                    <span class="btn-text">Xarid qilish</span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-                <!-- End Single Pricing  -->
-
-               <!-- Start Single Pricing  -->
-                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-                    <div class="pricing-table style-2">
-                        <div class="pricing-header">
-                            <h3 class="title">OLTI OYLIK</h3>
-                            <span class="rbt-badge mb--35">Bitta fan uchun</span>
-                            <div class="price-wrap">
-                                <div class="yearly-pricing" style="display: none;">
-                                    <span class="amount">90 000</span>
-                                    <span class="duration">/so‘m</span>
-                                </div>
-                                <div class="monthly-pricing" style="display: block;">
-                                    <span class="amount">90 000</span>
-                                    <span class="duration">/so‘m</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pricing-btn">
-                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="#">
-                                <div class="icon-reverse-wrapper">
-                                    <span class="btn-text">Xarid qilish</span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- End Single Pricing  -->
-
-                <!-- Start Single Pricing  -->
-                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-                    <div class="pricing-table style-2">
-                        <div class="pricing-header">
-                            <h3 class="title">BIR YILLIK</h3>
-                            <span class="rbt-badge mb--35">Bitta fan uchun</span>
-                            <div class="price-wrap">
-                                <div class="yearly-pricing" style="display: none;">
-                                    <span class="amount">150 000</span>
-                                    <span class="duration">/so‘m</span>
-                                </div>
-                                <div class="monthly-pricing" style="display: block;">
-                                    <span class="amount">150 000</span>
-                                    <span class="duration">/so‘m</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pricing-btn">
-                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="#">
-                                <div class="icon-reverse-wrapper">
-                                    <span class="btn-text">Xarid qilish</span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- End Single Pricing  -->
+                 @endforeach
             </div>
         </div>
     </div>
@@ -342,7 +250,7 @@
                             <div class="rbt-counterup style-2">
                                 <div class="inner">
                                     <div class="content">
-                                        <h3 class="counter"><span class="odometer" data-count="500">00</span>
+                                        <h3 class="counter"><span class="odometer" data-count="{{ $ststistiks['users'] }}">00</span>
                                         </h3>
                                         <span class="subtitle">Foydalanuvchilar</span>
                                     </div>
@@ -356,7 +264,7 @@
                             <div class="rbt-counterup style-2">
                                 <div class="inner">
                                     <div class="content">
-                                        <h3 class="counter"><span class="odometer" data-count="7">00</span>
+                                        <h3 class="counter"><span class="odometer" data-count="{{ $ststistiks['subjects'] }}">00</span>
                                         </h3>
                                         <span class="subtitle">Fanlar</span>
                                     </div>
@@ -370,7 +278,7 @@
                             <div class="rbt-counterup style-2">
                                 <div class="inner">
                                     <div class="content">
-                                        <h3 class="counter"><span class="odometer" data-count="1000">00</span>
+                                        <h3 class="counter"><span class="odometer" data-count="{{ $ststistiks['tests'] }}">00</span>
                                         </h3>
                                         <span class="subtitle">Testlar bazasi</span>
                                     </div>
@@ -384,7 +292,7 @@
                             <div class="rbt-counterup style-2">
                                 <div class="inner">
                                     <div class="content">
-                                        <h3 class="counter"><span class="odometer" data-count="200">00</span>
+                                        <h3 class="counter"><span class="odometer" data-count="{{ $ststistiks['schools'] }}">00</span>
                                         </h3>
                                         <span class="subtitle">Maktablar</span>
                                     </div>
@@ -420,22 +328,23 @@
                     </div>
                 </div>
                 <div class="row g-5">
+                @foreach($news as $new)
                     <div class="col-12 col-lg-4">
-                        <!-- Start Single Event  -->
+                        <!-- Start News  -->
                         <div class="rbt-card event-grid-card variation-01 rbt-hover p-4">
                             <div class="rbt-card-img">
-                                <a href="#">
-                                    <img src="assets/images/event/medical-03.png" alt="Card image">
+                                <a href="/news-view/{{ $new['id'] }}">
+                                    <img src="{{ $new['image'] }}" alt="News image">
                                 </a>
                             </div>
                             <div class="rbt-card-body">
                                 <ul class="rbt-meta">
-                                            <li><i class="feather-calendar"></i>11.09.2025</li>
-                                            <li><i class="feather-eye"></i>100</li>
+                                            <li><i class="feather-calendar"></i>{{ date('d.m.Y', strtotime($new['created_at'])) }}</li>
+                                            <li><i class="feather-eye"></i>{{ $new['views'] }}</li>
                                         </ul>
-                                <h4 class="rbt-card-title mb--5"><a href="#">Ona tili va adabiyot fani doirasida yangi testlar bazasi kiritildi</a></h4>
+                                <h4 class="rbt-card-title mb--5"><a href="/news-view/{{ $new['id'] }}">{{ $new['title'] }}</a></h4>
                                 <div class="read-more-btn">
-                                    <a class="rbt-btn btn-gradient hover-icon-reverse" href="#">
+                                    <a class="rbt-btn btn-gradient hover-icon-reverse" href="/news-view/{{ $new['id'] }}" style="float:right;">
                                         <span class="icon-reverse-wrapper">
                                             <span class="btn-text">Batafsil</span>
                                         <span class="btn-icon"><i class="feather-arrow-right"></i></span>
@@ -445,67 +354,8 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- End Single Event  -->
-                    </div>
-                    <div class="col-12 col-lg-8">
-                        <div class="row mt_dec--20">
-                            <!-- Start Single Event  -->
-                            <div class="col-12 col-sm-6 col-lg-12 mt--20">
-                                <div class="rbt-card card-list-2 event-list-card variation-01 rbt-hover p-4">
-                                    <div class="rbt-card-img">
-                                        <a href="#">
-                                            <img src="assets/images/event/medical-01.png" alt="Card image">
-                                        </a>
-                                    </div>
-                                    <div class="rbt-card-body">
-                                        <ul class="rbt-meta">
-                                            <li><i class="feather-calendar"></i>15.09.2025</li>
-                                            <li><i class="feather-eye"></i>324</li>
-                                        </ul>
-                                        <h4 class="rbt-card-title"><a href="#">Barcha fanlardan umumiy natijalarni kuzatib borish imkoniyati yaratildi</a></h4>
-                                        <div class="read-more-btn">
-                                            <a class="rbt-btn btn-border hover-icon-reverse btn-sm radius-round" href="#">
-                                                <span class="icon-reverse-wrapper">
-                                                    <span class="btn-text">Batafsil</span>
-                                                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                                </span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Event  -->
-
-                            <!-- Start Single Event  -->
-                            <div class="col-12 col-sm-6 col-lg-12 mt--20">
-                                <div class="rbt-card card-list-2 event-list-card variation-01 rbt-hover p-4">
-                                    <div class="rbt-card-img">
-                                        <a href="#">
-                                            <img src="assets/images/event/medical-02.png" alt="Card image">
-                                        </a>
-                                    </div>
-                                    <div class="rbt-card-body">
-                                        <ul class="rbt-meta">
-                                            <li><i class="feather-calendar"></i>15.09.2025</li>
-                                            <li><i class="feather-eye"></i>1987</li>
-                                        </ul>
-                                        <h4 class="rbt-card-title"><a href="#">Bizning foydalanuvchilar soni 500 nafardan oshdi</a></h4>
-
-                                        <div class="read-more-btn">
-                                            <a class="rbt-btn btn-border hover-icon-reverse btn-sm radius-round" href="#">
-                                                <span class="icon-reverse-wrapper">
-                                                    <span class="btn-text">Batafsil</span>
-                                                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                                </span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Event  -->
-                        </div>
+                        <!-- End News  -->
+                        @endforeach
                     </div>
                 </div>
             </div>

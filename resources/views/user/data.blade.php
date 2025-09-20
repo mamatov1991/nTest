@@ -47,7 +47,7 @@
                                             <div class="rbt-profile-content b2">Maktab (yoki bitirgan maktabi):</div>
                                         </div>
                                         <div class="col-lg-8 col-md-8">
-                                            <div class="rbt-profile-content b2">14-maktab</div>
+                                            <div class="rbt-profile-content b2"> 17-maktab</div>
                                         </div>
                                     </div>
                                     <!-- End Profile Row  -->
@@ -108,7 +108,7 @@
                                             <div class="rbt-profile-content b2">Ro‘yxatdan o‘tgan sana: </div>
                                         </div>
                                         <div class="col-lg-8 col-md-8">
-                                            <div class="rbt-profile-content b2">08.09.2025</div>
+                                            <div class="rbt-profile-content b2">{{ $userData['register_date'] }}</div>
                                         </div>
                                     </div>
                                     <!-- End Profile Row  -->
@@ -132,4 +132,8 @@
             <hr class="rbt-separator m-0">
         </div>
     </div>
+    <script>
+        console.log('User Data Object:');
+        console.log({{ json_encode($userData) }}); // $userData ni JSON obyekt sifatida konsolga chiqarish
+    </script>
 @endsection
