@@ -60,7 +60,7 @@
                             <ul class="mainmenu">
                                 
                                 <li class="with-megamenu">
-                                    <a href="#loyiha-haqida">Loyiha haqida</a>
+                                    <a href="/#loyiha-haqida">Loyiha haqida</a>
                                 </li>
                                 <li class="has-dropdown has-menu-child-item">
                                     <a href="#">Baholash talablari
@@ -69,7 +69,7 @@
                                     <ul class="submenu">
                                         <li class="has-dropdown"><a href="#">Fanlar spetsifikatsiyasi</a>
                                             <ul class="submenu">
-                                                <li><a href="#">Ona tili va adabiyot (milliy sertifikat)</a></li>
+                                                <li><a href="/asses-req-otva-mss">Ona tili va adabiyot (milliy sertifikat)</a></li>
                                                 <li><a href="#">Ona tili va adabiyot (attestatsiya)</a></li>
                                             </ul>
                                         </li>
@@ -81,8 +81,8 @@
                                         </li>
                                         <li class="has-dropdown"><a href="#">Baholash mezoni</a>
                                             <ul class="submenu">
-                                                <li><a href="#">Yozma ishni baholash mezoni</a></li>
-                                                <li><a href="#">Baholash mezoni (milliy sertifikat)</a></li>
+                                                <li><a href="/asses-req-otva-yibm">Yozma ishni baholash mezoni</a></li>
+                                                <li><a href="/asses-req-otva-msbm">Baholash mezoni (milliy sertifikat)</a></li>
                                                 <li><a href="#">Baholash mezoni (attestatsiya)</a></li>
                                             </ul>
                                         </li>
@@ -92,13 +92,13 @@
                                 </li>
                                 
                                 <li class="with-megamenu">
-                                    <a href="#narxlar">Narxlar</a>
+                                    <a href="/#narxlar">Narxlar</a>
                                 </li>
                                 <li class="with-megamenu">
-                                    <a href="#statistika">Statistika</a>
+                                    <a href="/#statistika">Statistika</a>
                                 </li>
                                 <li class="with-megamenu">
-                                    <a href="#yangiliklar">Yangiliklar</a>
+                                    <a href="/#yangiliklar">Yangiliklar</a>
                                 </li>
 
                             </ul>
@@ -146,7 +146,7 @@
             <nav class="mainmenu-nav">
                 <ul class="mainmenu">
                     <li class="with-megamenu">
-                                    <a href="#loyiha-haqida">Loyiha haqida</a>
+                                    <a href="/#loyiha-haqida">Loyiha haqida</a>
                                 </li>
                                  <li class="has-dropdown has-menu-child-item">
                                     <a href="#">Baholash talablari
@@ -155,7 +155,7 @@
                                     <ul class="submenu">
                                         <li class="has-dropdown"><a href="#">Fanlar spetsifikatsiyasi</a>
                                             <ul class="submenu">
-                                                <li><a href="#">Ona tili va adabiyot (milliy sertifikat)</a></li>
+                                                <li><a href="/asses-req-otva-mss">Ona tili va adabiyot (milliy sertifikat)</a></li>
                                                 <li><a href="#">Ona tili va adabiyot (attestatsiya)</a></li>
                                             </ul>
                                         </li>
@@ -167,8 +167,8 @@
                                         </li>
                                         <li class="has-dropdown"><a href="#">Baholash mezoni</a>
                                             <ul class="submenu">
-                                                <li><a href="#">Yozma ishni baholash mezoni</a></li>
-                                                <li><a href="#">Baholash mezoni (milliy sertifikat)</a></li>
+                                                <li><a href="/asses-req-otva-yibm">Yozma ishni baholash mezoni</a></li>
+                                                <li><a href="/asses-req-otva-msbm">Baholash mezoni (milliy sertifikat)</a></li>
                                                 <li><a href="#">Baholash mezoni (attestatsiya)</a></li>
                                             </ul>
                                         </li>
@@ -178,10 +178,10 @@
                                 </li>
                                 
                                 <li class="with-megamenu">
-                                    <a href="#narxlar">Narxlar</a>
+                                    <a href="/#narxlar">Narxlar</a>
                                 </li>
                                 <li class="with-megamenu">
-                                    <a href="#statistika">Statistika</a>
+                                    <a href="/#statistika">Statistika</a>
                                 </li>
                                 <li class="with-megamenu">
                                     <a href="#yangiliklar">Yangiliklar</a>

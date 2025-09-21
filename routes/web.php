@@ -18,6 +18,10 @@ Route::middleware(['web'])->group(function () {
     Route::get('/payment', [MainController::class, 'payment'])->name('payment');
 
     Route::get('/news-view/{id}', [MainController::class, 'news_view'])->name('news.view')->where('id', '[0-9]+');
+
+    Route::get('/asses-req-otva-mss', [MainController::class, 'asses_req_otva_mss'])->name('asses.req.otva.mss');
+    Route::get('/asses-req-otva-msbm', [MainController::class, 'asses_req_otva_msbm'])->name('asses.req.otva.msbm');
+    Route::get('/asses-req-otva-yibm', [MainController::class, 'asses_req_otva_yibm'])->name('asses.req.otva.yibm');
 });
 
 // Foydalanuvchi (faqat login bo‘lganlar uchun)
@@ -31,6 +35,7 @@ Route::middleware(['web', 'auth.student'])
         Route::get('/ranking',         [UserController::class, 'ranking'])->name('ranking');
         Route::get('/invoice',         [UserController::class, 'invoice'])->name('invoice');
         Route::get('/setting',         [UserController::class, 'setting'])->name('setting');
+        Route::post('/setting',         [UserController::class, 'setting_post'])->name('setting.post');
         Route::get('/select-test-type',[UserController::class, 'select_test_type'])->name('select.test.type');
         Route::post('/test-questions/{chapterId}', [UserController::class, 'test_questions'])->name('test.questions')->where('chapterId', '[0-9]+');
         Route::post('/test-submit', [UserController::class, 'test_submit'])->name('test.submit');

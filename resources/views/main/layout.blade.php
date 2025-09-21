@@ -69,7 +69,7 @@
                                     <ul class="submenu">
                                         <li class="has-dropdown"><a href="#">Fanlar spetsifikatsiyasi</a>
                                             <ul class="submenu">
-                                                <li><a href="#">Ona tili va adabiyot (milliy sertifikat)</a></li>
+                                                <li><a href="/asses-req-otva-mss">Ona tili va adabiyot (milliy sertifikat)</a></li>
                                                 <li><a href="#">Ona tili va adabiyot (attestatsiya)</a></li>
                                             </ul>
                                         </li>
@@ -81,8 +81,8 @@
                                         </li>
                                         <li class="has-dropdown"><a href="#">Baholash mezoni</a>
                                             <ul class="submenu">
-                                                <li><a href="#">Yozma ishni baholash mezoni</a></li>
-                                                <li><a href="#">Baholash mezoni (milliy sertifikat)</a></li>
+                                                <li><a href="/asses-req-otva-yibm">Yozma ishni baholash mezoni</a></li>
+                                                <li><a href="/asses-req-otva-msbm">Baholash mezoni (milliy sertifikat)</a></li>
                                                 <li><a href="#">Baholash mezoni (attestatsiya)</a></li>
                                             </ul>
                                         </li>

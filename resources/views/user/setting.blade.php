@@ -118,21 +118,21 @@
                                         <div class="tab-pane fade" id="profile-4" role="tabpanel" aria-labelledby="profile-tab-4">
                                             <div class="row g-5 mb--30">
                         <h4 class="title text-center">Parolni o‘zgartirish</h4>
-                        <form action="#" class="rbt-profile-row rbt-default-form row row--15">
-                                                
+                        <form action="/user/setting" method="POST" class="rbt-profile-row rbt-default-form row row--15">
+                                                @csrf
                                                 <div class="col-lg-4 col-md-4 col-sm-4 col-12 mb--10">
                                                     <div class="rbt-form-group">
-                                                        <input type="password" placeholder="Oldingi parol *" required>
+                                                        <input type="password" placeholder="Oldingi parol *" name="old_password" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-4 col-md-4 col-sm-4 col-12 mb--10">
                                                     <div class="rbt-form-group">
-                                                        <input type="password" placeholder="Yangi parol *" required>
+                                                        <input type="password" placeholder="Yangi parol *" name="new_password" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-4 col-md-4 col-sm-4 col-12 mb--10">
                                                     <div class="rbt-form-group">
-                                                        <input type="password" placeholder="Qaytadan yangi parol *" required>
+                                                        <input type="password" placeholder="Qaytadan yangi parol *" name="confirm_password" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">

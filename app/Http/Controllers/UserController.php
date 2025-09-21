@@ -92,6 +92,15 @@ class UserController extends Controller
         return view('user.setting', compact('userData'));
     }
 
+    public function setting_post(Request $request)
+    {
+        $user = $this->requireUserOrRedirect();
+        if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
+
+        $userData = $user;
+        return view('user.setting', compact('userData'));
+    }
+
     public function select_test_type()
     {
         $user = $this->requireUserOrRedirect();

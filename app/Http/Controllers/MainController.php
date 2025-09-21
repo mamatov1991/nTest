@@ -176,4 +176,18 @@ public function news_view($id)
     return view('main.news-view', compact('news_single', 'news'));
 }
 
+public function asses_req_otva_mss()
+{
+    return view('main.asses-req-otva-mss');
+}
+
+public function asses_req_otva_msbm()
+{
+    return view('main.asses-req-otva-msbm');
+}
+public function asses_req_otva_yibm()
+{
+    return view('main.asses-req-otva-yibm');
+}
+
 }
