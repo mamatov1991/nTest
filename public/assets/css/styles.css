@@ -20151,7 +20151,6 @@ span.transparent-button:hover i {
 .rbt-pagination {
   margin: -8px;
   padding: 0;
-  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -20162,6 +20161,7 @@ span.transparent-button:hover i {
 }
 .rbt-pagination li {
   margin: 8px;
+  display: inline-block!important;
 }
 @media only screen and (max-width: 767px) {
   .rbt-pagination li {
@@ -20193,8 +20193,8 @@ span.transparent-button:hover i {
   font-weight: 500;
 }
 .rbt-pagination li.active a, .rbt-pagination li:hover a {
-  background: var(--color-primary);
-  color: var(--color-white);
+  background: var(--color-primary)!important;
+  color: var(--color-white)!important;
 }
 
 /*-------------------------
@@ -39111,3 +39111,71 @@ line-height: 46px!important;
       font-size: 1.05rem !important;
     }
   }
+  .inline-text p {
+    display: inline;
+    margin: 0;
+}
+.rbt-pagination li a.answered:not(.active) {
+  background-color: #28a745;
+  color: #fff;
+}
+.question-text {
+  font-size: 19px;
+  display: flex; /* Flexbox bilan bir qatorni ta'minlash */
+  align-items: center; /* Vertikal markazlash */
+}
+
+.question-text span {
+  display: inline; /* Inline sifatida saqlash */
+  margin-right: 10px; /* Raqam va savol o‘rtasida masofa */
+}
+
+.question-text span:last-child {
+  margin-right: 0; /* Oxirgi span uchun margin olib tashlash */
+}
+
+.question-text u {
+  text-decoration: underline; /* <u> uchun stil */
+}
+
+    /* Popup ichidagi barcha elementlarga ta'sir qilish */
+.swal2-popup,
+.swal2-popup * {
+    /* Bu shrift o'lchamini har qanday global stil ustidan qo'yadi */
+    font-size: 16px !important; 
+    line-height: 1.4 !important;
+}
+
+/* Tugmalarga maxsus stil berish */
+.swal2-actions button {
+    /* Tugmalar ichidagi matn kattalashgach, paddingni ham moslashtiramiz */
+    font-size: 1em !important; 
+    padding: 0.6em 1.5em !important; 
+    min-width: 110px; /* Tugmalarni biroz kengaytirish */
+}
+
+/* Sarlavha (Javob berilmagan savollar...) stilini tiklash */
+.swal2-title {
+    font-size: 1.6em !important;
+    margin-top: 0.5em !important;
+}
+
+/* Ikonka (Sariq undov belgisi) */
+.swal2-icon {
+    width: 4em !important;
+    height: 4em !important;
+    margin: 1.5em auto 0.6em !important;
+}
+.swal2-icon .swal2-icon-content {
+    font-size: 2.5em !important;
+}
+
+/* Matn konteynerini tiklash */
+.swal2-html-container {
+    font-size: 1em !important;
+    margin: 1em 0 !important;
+}
+.result-ques p{
+  display: inline;
+  margin: 0;
+}

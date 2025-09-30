@@ -9,53 +9,24 @@
                                     </div>
                                     <div class="row g-5">
 
-                                                <!-- Start Single Subject  -->
-                                                <div class="col-lg-4 col-md-6 col-12">
-                                                    <div class="rbt-card variation-01 rbt-hover">
-                                                        
-                                                        <div class="rbt-card-body">
-                                                           
-                                                            <h4 class="rbt-card-title"><a href="/user/free-test">Sinov testi</a>
-                                                            </h4>
-                                                            <div class="rbt-card-bottom">
-                                                                <a class="rbt-btn btn-sm bg-primary-opacity w-100 text-center" href="/user/free-test">Test ishlash</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- End Single Subject  -->
-
+                                               
+                                                @foreach($userData['subjects'] as $subject)
                                                  <!-- Start Single Subject  -->
                                                 <div class="col-lg-4 col-md-6 col-12">
                                                     <div class="rbt-card variation-01 rbt-hover">
                                                         
                                                         <div class="rbt-card-body">
                                                            
-                                                            <h4 class="rbt-card-title"><a href="/user/select-test-type">Ona tili va adabiyot</a>
+                                                            <h4 class="rbt-card-title"><a href="/user/select-test-type/{{ $subject['id'] }}">{{$subject['name']}}</a>
                                                             </h4>
                                                             <div class="rbt-card-bottom">
-                                                                <a class="rbt-btn btn-sm bg-primary-opacity w-100 text-center" href="/user/select-test-type">Test ishlash</a>
+                                                                <a class="rbt-btn btn-sm bg-primary-opacity w-100 text-center" href="/user/select-test-type/{{ $subject['id'] }}">Test ishlash</a>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <!-- End Single Subject  -->
-                                                <!-- Start Single Subject  -->
-                                                <div class="col-lg-4 col-md-6 col-12">
-                                                    <div class="rbt-card variation-01 rbt-hover">
-                                                        
-                                                        <div class="rbt-card-body">
-                                                           
-                                                            <h4 class="rbt-card-title"><a href="/user/select-test-type">Matematika</a>
-                                                            </h4>
-                                                            <div class="rbt-card-bottom">
-                                                                <a class="rbt-btn btn-sm bg-primary-opacity w-100 text-center" href="/user/select-test-type">Test ishlash</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <!-- End Single Subject  -->
+                                                @endforeach
 <h4 class="text-center" style="margin-bottom: -20px;">Ko‘rsatkichlar</h4>
   <div class="chart-wrap">
     <canvas id="scoresChart"></canvas>

@@ -80,43 +80,42 @@ class ApiService
         }
     }
 
-    public static function postApiForUser(string $endpoint, array $data = []): array
-    {
-        $base = rtrim(config('api.base_url', ''), '/');
-        $full = "{$base}/api/{$endpoint}";
+    public static function postFromApiForUser(string $endpoint, array $data = []): array
+{
+    $base = rtrim(config('api.base_url', ''), '/');
+    $full = "{$base}/api/{$endpoint}";
 
-        $token = session('auth_token');
+    $token = session('auth_token');
 
-        if (empty($token)) {
-            Log::warning('postApiForUser called without session token', ['endpoint' => $endpoint]);
-            return ['success' => false, 'message' => 'Not authenticated', 'status' => 401];
-        }
-
-        try {
-            $resp = Http::withToken($token)
-                        ->acceptJson()
-                        ->post($full, $data);
-
-            if ($resp->failed()) {
-                Log::warning('POST API (User) failed', [
-                    'url' => $full,
-                    'status' => $resp->status(),
-                    'body' => $resp->body(),
-                    'endpoint' => $endpoint,
-                    'data' => $data,
-                ]);
-            }
-
-            return $resp->json() ?? ['success' => false, 'message' => 'Empty response from API', 'status' => $resp->status()];
-        } catch (\Throwable $e) {
-            Log::error('POST API (User) Error: '.$e->getMessage(), [
-                'url' => $full,
-                'token_present' => !empty($token),
-                'data' => $data,
-            ]);
-            return ['success' => false, 'message' => $e->getMessage(), 'status' => 500];
-        }
+    if (empty($token)) {
+        Log::warning('postFromApiForUser called without session token', ['endpoint' => $endpoint]);
+        return ['success' => false, 'message' => 'Not authenticated', 'status' => 401];
     }
+
+    try {
+        $resp = Http::withToken($token)
+                    ->acceptJson()
+                    ->post($full, $data);
+
+        if ($resp->failed()) {
+            Log::warning('POST API (User) failed', [
+                'url' => $full,
+                'status' => $resp->status(),
+                'body' => $resp->body(),
+                'endpoint' => $endpoint,
+            ]);
+        }
+
+        return $resp->json() ?? ['success' => false, 'message' => 'Empty response from API', 'status' => $resp->status()];
+    } catch (\Throwable $e) {
+        Log::error('POST API (User) Error: '.$e->getMessage(), [
+            'url' => $full,
+            'token_present' => !empty($token),
+        ]);
+        return ['success' => false, 'message' => $e->getMessage(), 'status' => 500];
+    }
+}
+
 
     /**
      * POST so'rov (umumiy token)

@@ -1,245 +1,320 @@
-@extends('user.test-layout')
+    @extends('user.test-layout')
 
-@section('main')
-  <div class="row g-5">
-                        
+    @section('main')
+    <div class="row g-5">         
 
-                        <div class="col-lg-12">
-  <div class="rbt-dashboard-content bg-color-white rbt-shadow-box mb--60">
+    <div class="col-lg-12">
+    <h5 class="text-center">{{ $subject_name }}</h5>
+    <div class="rbt-dashboard-content bg-color-white rbt-shadow-box mb--60">
+    <div class="inner">
     <div class="content">
-
-      {{-- Test sarlavha ma'lumotlari --}}
-      <div class="section-title mb-3">
-        <h4 class="rbt-title-style-3">
-          {{ data_get($test, 'chapter.subject.name') }} — {{ data_get($test, 'chapter.name') }}
-        </h4>
-        {!! data_get($test, 'chapter.info') !!}
-      </div>
-
-      <div class="quize-top-meta d-flex justify-content-between align-items-center">
-        <div class="quize-top-left">
-          <span>Test ID: <strong>{{ data_get($test, 'test_id') }}</strong></span>
-          <span class="ms-3">Savollar: <strong id="total-count"></strong></span>
-        </div>
-        <div class="quize-top-right">
-          <span>Vaqt: <strong id="countdown">30:00</strong></span>
-        </div>
-      </div>
-
-      <hr>
-
-      {{-- Navigatsiya (raqamlar) --}}
-      <nav>
-        <div class="nav-links mb--20">
-          <ul id="pager" class="rbt-pagination justify-content-start flex-wrap"></ul>
-        </div>
-      </nav>
-
-      {{-- Savol konteyneri --}}
-      <form id="quiz-form" class="quiz-form-wrapper">
-        <input type="hidden" id="test_id" value="{{ data_get($test, 'test_id') }}">
-
-        <div id="question-wrap" class="rbt-single-quiz"></div>
-
-        <div class="d-flex justify-content-between mt-4">
-          <button id="btn-prev" type="button" class="rbt-btn btn-outline-secondary">Oldingi</button>
-          <div>
-            <button id="btn-next" type="button" class="rbt-btn btn-gradient me-2">Keyingi</button>
-            <button id="btn-submit" type="button" class="rbt-btn btn-primary">Yakunlash</button>
-          </div>
-        </div>
-      </form>
-
-      {{-- Submit uchun yashirin forma (serverga POST) --}}
-      <form id="submit-form" method="POST" action="{{ route('user.test.submit') }}" class="d-none">
-        @csrf
-        <input type="hidden" name="test_id" value="{{ data_get($test, 'test_id') }}">
-        <input type="hidden" name="answers" id="answers-input">
-      </form>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <form id="quiz-form" class="quiz-form-wrapper">
+    <input type="hidden" name="test_id" value="{{ $test_id }}">
+    <div class="quize-top-meta mb-3">
+    <div class="quize-top-left">
+    <span>Bo‘lim nomi: <strong>{{ $chapter_name }}</strong></span>
+    <span>Savollar soni: <strong>{{ count($chapter_questions) }} ta</strong></span>
+    </div>
+    <div class="quize-top-right">
+    <span>Vaqt: <strong id="countdown">{{ gmdate('i:s', $remaining_time) }}</strong></span>
+    </div>
+    </div>
+    <hr>
+    <div class="row">
+    <div class="col-lg-12">
+    <nav>
+    <ul id="quiz-nav" class="rbt-pagination justify-content-start">
+    @foreach ($chapter_questions as $index => $question)
+    <li>
+    <a href="#" class="nav-btn" data-index="{{ $loop->iteration }}">{{ $loop->iteration }}</a>
+    </li>
+    @endforeach
+    </ul>
+    </nav>
+    </div>
+    </div>
+    @foreach ($chapter_questions as $index => $question)
+    <div class="question d-none" id="question-{{ $loop->iteration }}">
+    <div class="question-text mt--30">
+    <span>{{ $loop->iteration }}.</span> <span>{!!$question['id']!!} {!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
+    </div>
+    <div class="row g-3 mt-2">
+    @foreach ($question['options'] ?? [] as $optIndex => $option)
+    <div class="col-lg-12">
+    <p class="rbt-checkbox-wrapper mb-2">
+    <input class="form-check-input answer-option"
+    type="radio"
+    name="question_{{ $loop->iteration }}"
+    data-question-id="{{ $question['id'] ?? 'unknown' }}"
+    value="{{ $option['id'] ?? '' }}"
+    id="option-{{ $option['id'] ?? uniqid() }}">
+    <label class="form-check-label" for="option-{{ $option['id'] ?? uniqid() }}">
+    {{ chr(65 + $optIndex) }}) {{ $option['body'] ?? 'Variant yo‘q' }}
+    </label>
+    </p>
+    </div>
+    @endforeach
+    </div>
+    </div>
+    @endforeach
+    <div class="submit-btn mt-4">
+    <button type="button" id="submit-test" class="rbt-btn btn-gradient hover-icon-reverse" style="float:right; padding-left: 50px;">
+    <span class="icon-reverse-wrapper">
+    <span class="btn-text">Testni tugatish</span>
+    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+    </span>
+    </button>
+    </div>
+    </form>
 
     </div>
-  </div>
-</div>
     </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
     <!-- End Card Style -->
     <div class="rbt-separator-mid">
-        <div class="container">
-            <hr class="rbt-separator m-0">
-        </div>
+    <div class="container">
+    <hr class="rbt-separator m-0">
     </div>
-@endsection
+    </div>
+    @endsection
 
-@section('script')
+    @section('script')
 
-<script>
-  // Boshlang‘ich vaqt (179 minut 25 sekund)
-  let totalSeconds = 179 * 60 + 25;
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+    let currentQuestion = 1;
+    const totalQuestions = {{ count($chapter_questions) }};
+    const isNewTest = {{ $isNewTest ? 'true' : 'false' }};
+    let answers;
+    let remainingTime;
+    let countdownInterval;
 
-  function updateTimer() {
-    // Soat, minut, sekund hisoblash
-    const hours   = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    // Format: 2 xonali qilish uchun padStart ishlatyapmiz
-    const formatted =
-      String(hours).padStart(2, '0') + ":" +
-      String(minutes).padStart(2, '0') + ":" +
-      String(seconds).padStart(2, '0');
-
-    // Ekranga chiqarish
-    document.getElementById("countdown").textContent = formatted;
-
-    // 1 soniyadan kamaytirish
-    if (totalSeconds > 0) {
-      totalSeconds--;
+    // Yangi test bo'lsa, localStorage'ni tozalash
+    if (isNewTest) {
+    localStorage.removeItem('quizAnswers');
+    localStorage.removeItem('remainingTime');
+    answers = {};
+    remainingTime = {{ $remaining_time }};
+    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+    history.replaceState({}, document.title, newUrl);
     } else {
-      clearInterval(timer); // vaqt tugasa to‘xtatamiz
-      // Hohlasa alert yoki boshqa action qilishingiz mumkin
-      alert("Vaqt tugadi!");
+    answers = JSON.parse(localStorage.getItem('quizAnswers')) || {{ json_encode($userAnswers) }} || {};
+    remainingTime = localStorage.getItem('remainingTime') ? parseInt(localStorage.getItem('remainingTime')) : {{ $remaining_time }};
     }
-  }
 
-  // Har 1 sekundda yangilash
-  updateTimer(); // birinchi chaqirish
-  const timer = setInterval(updateTimer, 1000);
-</script>
+    const submitBtn = document.getElementById('submit-test');
+    const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
+    const countdownElem = document.getElementById('countdown');
 
-<script>
-// ----- 1) Ma'lumot -----
-const TEST = @json($test ?? []);
-const questions = TEST?.questions ?? [];
-const total = questions.length;
-document.getElementById('total-count').textContent = total;
+    // Vaqtni formatlash
+    function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
 
-// Javoblar: { [question_id]: option_id }
-const answers = {}; 
+    // Countdown funksiyasi
+    function startCountdown() {
+    if (!countdownElem) return;
+    countdownInterval = setInterval(() => {
+    remainingTime--;
+    if (remainingTime <= 0) {
+    clearInterval(countdownInterval);
+    alert("Vaqt tugadi!");
+    submitTest();
+    } else {
+    countdownElem.textContent = formatTime(remainingTime);
+    localStorage.setItem('remainingTime', remainingTime);
+    }
+    }, 1000);
+    }
 
-// Current index (0-based)
-let idx = 0;
+    // Savolni ko'rsatish
+    function showQuestion(index) {
+    const questionElements = document.querySelectorAll('.question');
+    if (!questionElements.length) return;
 
-// ----- 2) UI render -----
-const wrap = document.getElementById('question-wrap');
-const pager = document.getElementById('pager');
-const btnPrev = document.getElementById('btn-prev');
-const btnNext = document.getElementById('btn-next');
-const btnSubmit = document.getElementById('btn-submit');
+    questionElements.forEach(q => q.classList.add('d-none'));
+    const questionElem = document.getElementById('question-' + index);
+    if (!questionElem) return;
+    questionElem.classList.remove('d-none');
+    questionElem.querySelectorAll('.answer-option').forEach(opt => {
+    opt.checked = answers[opt.dataset.questionId] === opt.value;
+    });
 
-// Pager (raqamlar) hosil qilish
-function buildPager() {
-  pager.innerHTML = '';
+    const navButtons = document.querySelectorAll('.rbt-pagination li a');
+    navButtons.forEach(btn => {
+    btn.parentElement.classList.remove('active');
+    const questionId = document.getElementById('question-' + btn.dataset.index)?.querySelector('.answer-option')?.dataset.questionId;
+    if (questionId && answers[questionId]) {
+    btn.classList.add('answered');
+    } else {
+    btn.classList.remove('answered');
+    }
+    });
 
-  // Previous
-  const liPrev = document.createElement('li');
-  liPrev.innerHTML = `<a href="#" aria-label="Previous"><i class="feather-chevron-left"></i></a>`;
-  liPrev.onclick = (e) => { e.preventDefault(); go(idx - 1); };
-  pager.appendChild(liPrev);
+    const navBtn = document.querySelector(`.rbt-pagination li a[data-index="${index}"]`);
+    if (navBtn) {
+    navBtn.parentElement.classList.add('active');
+    }
+    currentQuestion = parseInt(index);
+    if (btnText) {
+    btnText.textContent = currentQuestion === totalQuestions ? 'Testni tugatish' : 'Keyingi';
+    }
+    }
 
-  // Numbers
-  for (let i = 0; i < total; i++) {
-    const li = document.createElement('li');
-    li.className = (i === idx) ? 'active' : '';
-    li.innerHTML = `<a href="#">${i + 1}</a>`;
-    li.onclick = (e) => { e.preventDefault(); go(i); };
-    pager.appendChild(li);
-  }
+    // Javoblarni yig'ish
+    const answerOptions = document.querySelectorAll('.answer-option');
+    if (answerOptions.length > 0) {
+    answerOptions.forEach(opt => {
+    opt.addEventListener('change', function() {
+    const qId = this.dataset.questionId;
+    const value = this.value;
+    answers[qId] = value; // Har bir tanlovni alohida saqlash
+    localStorage.setItem('quizAnswers', JSON.stringify(answers));
+    const currentNavBtn = document.querySelector(`.rbt-pagination li a[data-index="${currentQuestion}"]`);
+    if (currentNavBtn) {
+    currentNavBtn.classList.add('answered');
+    }
+    console.log('Updated answers:', answers); // Debug uchun
+    });
+    });
+    }
 
-  // Next
-  const liNext = document.createElement('li');
-  liNext.innerHTML = `<a href="#" aria-label="Next"><i class="feather-chevron-right"></i></a>`;
-  liNext.onclick = (e) => { e.preventDefault(); go(idx + 1); };
-  pager.appendChild(liNext);
-}
+    // Navigatsiya tugmalari
+    const navButtons = document.querySelectorAll('.rbt-pagination li a');
+    if (navButtons.length > 0) {
+    navButtons.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    showQuestion(this.dataset.index);
+    });
+    });
+    }
 
-// Savol sahifasini chizish
-function renderQuestion() {
-  if (!questions[idx]) { wrap.innerHTML = '<p>—</p>'; return; }
-
-  const q = questions[idx];
-  const qNo = idx + 1;
-
-  const saved = answers[q.id] ?? null;
-
-  // instruction va question — HTML bo'lishi mumkin
-  const html = `
-    <h5>${qNo}. ${q.question || ''}</h5>
-    ${q.instruction ? `<div class="mb-2">${q.instruction}</div>` : ''}
-    <div class="row g-3 mt--10">
-      ${q.options.map((opt, i) => {
-        const inputId = `q${q.id}_opt${i}`;
-        const checked = (saved && saved === opt.id) ? 'checked' : '';
-        return `
-          <div class="col-lg-12">
-            <label class="rbt-checkbox-wrapper d-flex align-items-center">
-              <input class="form-check-input me-2" type="radio" 
-                     name="q_${q.id}" id="${inputId}" value="${opt.id}" ${checked}>
-              <span>${opt.body}</span>
-            </label>
-          </div>
-        `;
-      }).join('')}
-    </div>
-  `;
-
-  wrap.innerHTML = html;
-
-  // radio change -> answers ga yozamiz
-  const radios = wrap.querySelectorAll('input[type=radio]');
-  radios.forEach(r => r.addEventListener('change', (e) => {
-    answers[q.id] = e.target.value;
-  }));
-
-  // Tugmalar holati
-  btnPrev.disabled = (idx === 0);
-  btnNext.disabled = (idx === total - 1);
-}
-
-// Indexni o'zgartirish
-function go(nextIdx) {
-  if (nextIdx < 0 || nextIdx >= total) return;
-  idx = nextIdx;
-  buildPager();
-  renderQuestion();
-}
-
-// Next/Prev
-btnPrev.addEventListener('click', () => go(idx - 1));
-btnNext.addEventListener('click', () => go(idx + 1));
-
-// Submit
-btnSubmit.addEventListener('click', () => {
-  if (!confirm('Testni yakunlashni xohlaysizmi?')) return;
-
-  // answers formatini API talabiga moslaymiz:
-  // [{question_id: .., option_id: ..}, ...]
-  const payload = Object.entries(answers).map(([qid, oid]) => ({
-    question_id: parseInt(qid, 10),
-    option_id: oid
-  }));
-
-  document.getElementById('answers-input').value = JSON.stringify(payload);
-  document.getElementById('submit-form').submit();
-});
-
-// Boshlang'ich chizish
-buildPager();
-renderQuestion();
-
-// ----- 3) Timer (oddiy 30 daqiqa) -----
-let remain = 30 * 60; // 30 min
-const cd = document.getElementById('countdown');
-const timer = setInterval(() => {
-  remain--;
-  if (remain <= 0) {
-    clearInterval(timer);
-    cd.textContent = '00:00';
-    alert('Vaqt tugadi. Javoblar yuboriladi.');
-    btnSubmit.click();
+    // Submit funksiyasi
+    function submitTest() {
+    const testId = {{ $test_id ?? 'null' }};
+    if (!testId || isNaN(parseInt(testId))) {
+    alert("Test ID noto'g'ri! Sahifani qayta yuklang.");
     return;
-  }
-  const m = String(Math.floor(remain / 60)).padStart(2, '0');
-  const s = String(remain % 60).padStart(2, '0');
-  cd.textContent = `${m}:${s}`;
-}, 1000);
-</script>
-@endsection
+    }
+
+    const payload = {
+    test_id: parseInt(testId),
+    answers: Object.keys(answers)
+    .filter(qId => answers[qId]) // faqat javob berilganlarini olamiz
+    .map(qId => ({ 
+    id: parseInt(qId),      // question_id raqam
+    answer: answers[qId]    // option_id string (masalan: "68d3d5094b7d1")
+    }))
+    };
+
+
+    if (payload.answers.length === 0) {
+    alert("Iltimos, kamida bitta savolga javob bering!");
+    return;
+    }
+
+    console.log('Payload:', payload); // Debug uchun
+
+    fetch("{{ route('user.submit.test') }}", {
+    method: "POST",
+    headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    },
+    body: JSON.stringify(payload)
+    })
+    .then(res => {
+    console.log('Response status:', res.status);
+    if (!res.ok) {
+    return res.json().then(data => {
+    throw new Error(data.message || 'Server xatosi: ' + JSON.stringify(data.errors || {}));
+    });
+    }
+    return res.json();
+    })
+    .then(data => {
+    if (data.success) {
+    let answerDetails = payload.answers.map(item => 
+    `Savol ID: ${item.id}, Javob: ${item.answer}`
+    ).join('\n');
+    // alert(`${data.message} \n\nYuborilgan javoblar:\n${answerDetails}\n\nNatijalar:\nScore: ${data.data?.score || 'Noma\'lum'}`);
+    } else {
+    // alert("API xatosi: " + (data.message || 'Noma\'lum xato'));
+    }
+    localStorage.removeItem('quizAnswers');
+    localStorage.removeItem('remainingTime');
+    clearInterval(countdownInterval);
+    window.location.href = "{{ route('user.test.results') }}";
+    })
+    .catch(err => {
+    console.error('Error:', err.message);
+    });
+    }
+
+    // Submit tugmasi
+    if (submitBtn) {
+    submitBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    if (currentQuestion < totalQuestions) {
+    showQuestion(currentQuestion + 1);
+    } else {
+    const unanswered = [];
+    for (let i = 1; i <= totalQuestions; i++) {
+    const qId = document.getElementById('question-' + i)?.querySelector('.answer-option')?.dataset.questionId;
+    if (qId && !answers[qId]) {
+    unanswered.push(i);
+    }
+    }
+
+    if (unanswered.length > 0) {
+    Swal.fire({
+    title: 'Javob berilmagan savollar mavjud!',
+    text: 'Testni yakunlamoqchimisiz?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Ha, yakunlash',
+    cancelButtonText: 'Yo‘q, davom etish'
+    }).then((result) => {
+    if (result.isConfirmed) {
+    submitTest();
+    } else {
+    showQuestion(unanswered[0]);
+    }
+    });
+    } else {
+    submitTest();
+    }
+    }
+    });
+    }
+
+    // Dastlabki holatni o'rnatish
+    showQuestion(1);
+    countdownElem.textContent = formatTime(remainingTime);
+    startCountdown();
+    });
+    </script>
+
+    <!-- <script>
+    document.querySelectorAll('.answer-option').forEach(opt => {
+    console.log('Question ID:', opt.dataset.questionId, 'Value:', opt.value);
+    });
+    </script> -->
+
+
+    @endsection

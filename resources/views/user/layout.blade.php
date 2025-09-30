@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Student Dashboard - Online Courses & Education Bootstrap5 Template</title>
+    <title>Shaxsiy kabinet</title>
     <meta name="robots" content="noindex, follow">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -55,7 +55,7 @@
                                 <div class="tutor-content">
                                     <h5 class="title">{{ $userData['surname'] }} {{ $userData['name'] }}</h5>
                                     <ul class="rbt-meta rbt-meta-white mt--5">
-                                        <li><i class="feather-book"></i>2 ta fan tanlangan</li>
+                                        <li><i class="feather-book"></i>{{count($userData['subjects'])}} ta fan tanlangan</li>
                                         <li><i class="feather-list"></i>Tarif: bir oylik</li>
                                     </ul>
                                 </div>
@@ -131,16 +131,16 @@
                             <h5 class="ft-title">Menyu</h5>
                             <ul class="ft-link">
                                 <li>
-                                    <a href="#">Loyiha haqida</a>
+                                    <a href="/user/main">Asosiy</a>
                                 </li>
                                 <li>
-                                    <a href="#">Narxlar</a>
+                                    <a href="/user/data">Ma'lumotlar</a>
                                 </li>
                                 <li>
-                                    <a href="#">Statistika</a>
+                                    <a href="/user/ranking">Reyting</a>
                                 </li>
                                 <li>
-                                    <a href="#">Yangiliklar</a>
+                                    <a href="/user/setting">Sozlamalar</a>
                                 </li>
                             </ul>
                         </div>

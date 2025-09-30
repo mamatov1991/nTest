@@ -36,9 +36,15 @@ Route::middleware(['web', 'auth.student'])
         Route::get('/invoice',         [UserController::class, 'invoice'])->name('invoice');
         Route::get('/setting',         [UserController::class, 'setting'])->name('setting');
         Route::post('/setting',         [UserController::class, 'setting_post'])->name('setting.post');
-        Route::get('/select-test-type',[UserController::class, 'select_test_type'])->name('select.test.type');
-        Route::post('/test-questions/{chapterId}', [UserController::class, 'test_questions'])->name('test.questions')->where('chapterId', '[0-9]+');
-        Route::post('/test-submit', [UserController::class, 'test_submit'])->name('test.submit');
+        Route::get('/select-test-type/{subjectId}',[UserController::class, 'select_test_type'])->name('select.test.type')->where('subjectId', '[0-9]+');
+        Route::post('/select-test-type/{subjectId}',[UserController::class, 'select_test_type'])->name('select.test.type')->where('subjectId', '[0-9]+');
+        Route::get('/tests-by-category/{subjectId}', [UserController::class, 'getTestsByCategory']);
+        Route::get('/test-questions/{chapterId}', [UserController::class, 'test_questions'])->name('test.questions')->where('chapterId', '[0-9]+');
+        Route::post('/final-test-questions/{finalTestId}', [UserController::class, 'final_test_questions'])->name('final.test.questions')->where('finalTestId', '[0-9]+');
+        Route::get('/final-test-questions/{finalTestId}', [UserController::class, 'final_test_questions'])->name('final.test.questions')->where('finalTestId', '[0-9]+');
+        Route::post('/user-save-remaining-time', [UserController::class, 'save_remaining_time'])->name('save.remaining.time');
+        Route::post('/test-submit', [UserController::class, 'submitTest'])->name('submit.test');
+        Route::get('/test-submit', [UserController::class, 'submitTest'])->name('submit.test');
         Route::get('/test-results',    [UserController::class, 'test_results'])->name('test.results');
         Route::get('/logout',          [UserController::class, 'logout'])->name('logout');
     });

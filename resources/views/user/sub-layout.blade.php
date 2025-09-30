@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Foydalanuvchi shaxsiy kabineti</title>
+    <title>Shaxsiy kabinet</title>
     <meta name="robots" content="noindex, follow">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -28,12 +29,12 @@
     <link rel="stylesheet" href="../../assets/css/plugins/magnigy-popup.min.css">
     <link rel="stylesheet" href="../../assets/css/plugins/plyr.css">
     <link rel="stylesheet" href="../../assets/css/plugins/jodit.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css">
+
     <link rel="stylesheet" href="../../assets/css/styles.css">
 </head>
 
 <body>
-    <div class="rbt-page-banner-wrapper">
+<div class="rbt-page-banner-wrapper">
         <!-- Start Banner BG Image  -->
         <div class="rbt-banner-image"></div>
         <!-- End Banner BG Image  -->
@@ -55,18 +56,18 @@
                                 <div class="tutor-content">
                                     <h5 class="title">{{ $userData['surname'] }} {{ $userData['name'] }}</h5>
                                     <ul class="rbt-meta rbt-meta-white mt--5">
-                                        <li><i class="feather-book"></i>{{count($userData['subjects'])}} ta fan tanlangan</li>
+                                        <li><i class="feather-book"></i>2 ta fan tanlangan</li>
                                         <li><i class="feather-list"></i>Tarif: bir oylik</li>
                                     </ul>
                                 </div>
                             </div>
                             <div class="rbt-tutor-information-right">
                                 <div class="tutor-btn">
-                                    <a class="rbt-btn btn-md hover-icon-reverse" href="/user/main">
+                                    <a class="rbt-btn btn-md hover-icon-reverse" href="/user/logout">
                                         <span class="icon-reverse-wrapper">
-                        <span class="btn-text">Asosiy oyna</span>
-                                        <span class="btn-icon"><i class="feather-arrow-left"></i></span>
-                                        <span class="btn-icon"><i class="feather-arrow-left"></i></span>
+                        <span class="btn-text">Tizimdan chiqish</span>
+                                        <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                        <span class="btn-icon"><i class="feather-arrow-right"></i></span>
                                         </span>
                                     </a>
                                 </div>
@@ -76,7 +77,36 @@
                     </div>
                     <!-- End Dashboard Top  -->
 
-                  @yield('main')
+                    <div class="row g-5">
+                        <div class="col-lg-3">
+                            <!-- Start Dashboard Sidebar  -->
+                            <div class="rbt-default-sidebar sticky-top rbt-shadow-box rbt-gradient-border">
+                                <div class="inner">
+                                    <div class="content-item-content">
+
+                                        <div class="rbt-default-sidebar-wrapper">
+                                            <div class="section-title mb--20">
+                                                <h6 class="rbt-title-style-2">Shaxsiy kabinet</h6>
+                                            </div>
+                                            <nav class="mainmenu-nav">
+                                                <ul class="dashboard-mainmenu rbt-default-sidebar-list">
+                                                    <li><a href="/user/main" class="{{ request()->is('user/main') ? 'active' : '' }}"><i class="feather-home"></i><span>Asosiy</span></a></li>
+                                                    <li><a href="/user/data" class="{{ request()->is('user/data') ? 'active' : '' }}"><i class="feather-user"></i><span>Ma’lumotlar</span></a></li>
+                                                    <li><a href="/user/results" class="{{ request()->is('user/results') ? 'active' : '' }}"><i class="feather-help-circle"></i><span>Natijalar</span></a></li>
+                                                    <li><a href="/user/ranking" class="{{ request()->is('user/ranking') ? 'active' : '' }}"><i class="feather-star"></i><span>Reyting</span></a></li>
+                                                    <li><a href="/user/invoice" class="{{ request()->is('user/invoice') ? 'active' : '' }}"><i class="feather-shopping-bag"></i><span>To‘lovlar tarixi</span></a></li>
+                                                    <li><a href="/user/setting" class="{{ request()->is('user/setting') ? 'active' : '' }}"><i class="feather-settings"></i><span>Sozlamalar</span></a></li>
+                                                    <li><a href="/user/logout"><i class="feather-log-out"></i><span>Chiqish</span></a></li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Dashboard Sidebar  -->
+                        </div>
+@yield('main')
     <!-- Start Footer aera -->
     <footer class="rbt-footer footer-style-1">
         <div class="footer-top">
@@ -102,16 +132,16 @@
                             <h5 class="ft-title">Menyu</h5>
                             <ul class="ft-link">
                                 <li>
-                                    <a href="#">Loyiha haqida</a>
+                                    <a href="/user/main">Asosiy</a>
                                 </li>
                                 <li>
-                                    <a href="#">Narxlar</a>
+                                    <a href="/user/data">Ma'lumotlar</a>
                                 </li>
                                 <li>
-                                    <a href="#">Statistika</a>
+                                    <a href="/user/ranking">Reyting</a>
                                 </li>
                                 <li>
-                                    <a href="#">Yangiliklar</a>
+                                    <a href="/user/setting">Sozlamalar</a>
                                 </li>
                             </ul>
                         </div>
@@ -153,6 +183,11 @@
             <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
         </svg>
     </div>
+@if(session('error'))
+    <script>
+        alert("{{ session('error') }}");
+    </script>
+@endif
 
     <!-- JS
 ============================================ -->
@@ -179,6 +214,7 @@
     <script src="../../assets/js/vendor/easypie.js"></script>
     <script src="../../assets/js/vendor/text-type.js"></script>
     <script src="../../assets/js/vendor/jquery-one-page-nav.js"></script>
+    <script src="../../assets/js/vendor/bootstrap-select.min.js"></script>
     <script src="../../assets/js/vendor/jquery-ui.js"></script>
     <script src="../../assets/js/vendor/magnify-popup.min.js"></script>
     <script src="../../assets/js/vendor/paralax-scroll.js"></script>
@@ -188,7 +224,7 @@
     <script src="../../assets/js/vendor/jodit.min.js"></script>
     <script src="../../assets/js/vendor/Sortable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
+
 
     <!-- Main JS -->
     <script src="../../assets/js/main.js"></script>
