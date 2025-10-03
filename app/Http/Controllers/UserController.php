@@ -271,32 +271,30 @@ class UserController extends Controller
 
         $isNewTest = $request->has('new');
         $questionsKey = 'final_test_questions_' . $finalTestId . '_' . auth()->id();
-
-        $final_test_questions_all_params = null;
-
-        if ($isNewTest || !session()->has($questionsKey)) {
         $apiResponse = ApiService::getFromApiForUser('final-test/start-test/' . $finalTestId);
-dd($apiResponse);
-        $test_id = data_get($apiResponse, 'data.test_id', []);
+        $all_final_test_params = data_get($apiResponse, 'data', []);
+        dd($all_final_test_params);
+        // dd($all_final_test_params);
+        if ($isNewTest || !session()->has($questionsKey)) {
+        
+        // dd($apiResponse);
+        $test_id = data_get($apiResponse, 'data.student_final_test.student_final_test_id', []);
         $final_test_questions = data_get($apiResponse, 'data.questions', []);
 
-        // dd($chapter_questions_all_params);
-
-        $chapter_questions = array_slice($chapter_questions, 0, 10);
         session()->put('test_id', $test_id);
-        session()->put($questionsKey, $chapter_questions);
+        session()->put($questionsKey, $final_test_questions);
         session()->forget(['remaining_time', 'answers_' . auth()->id()]);
         } else {
-        $chapter_questions = session($questionsKey);
+        $final_test_questions = session($questionsKey);
         }
 
         $test_id = session('test_id');
-        //    dd('Test ID: ' . $test_id);
+        // dd('Test ID: ' . $test_id);
         $userId = auth()->id();
         $answersKey = 'answers_' . $userId;
         $userAnswers = session($answersKey, []);
 
-        $time_limit = 1800;
+        $time_limit = 2800;
         $remaining_time = session('remaining_time', $time_limit);
 
         session([
@@ -307,10 +305,10 @@ dd($apiResponse);
         $subject_name = session()->get('subjectName');
         $chapter_name = session()->get('chapterName');
 
-        return view('user.test-questions', compact(
+        return view('user.final-test-questions', compact(
         'userData',
-        'chapter_questions',
-        'chapter_questions_all_params',
+        'final_test_questions',
+        'all_final_test_params',
         'subject_name',
         'chapter_name',
         'test_id',
@@ -360,6 +358,45 @@ dd($apiResponse);
         }
     }
 
+    public function submitFinalTest(Request $request)
+    {
+        $validated = $request->validate([
+        'test_id' => 'required|integer',
+        'answers' => 'required|array|min:1',
+        'answers.*.id' => 'required|integer',
+        'answers.*.type' => 'required|string',
+        'answers.*.answer' => 'required|string',
+        ]);
+
+        $final_test_id=session('test_id');
+
+        \Log::info('Submitted Test Payload:', $validated);
+
+        try {
+        $response = ApiService::postFromApiForUser('final-test/finish-test', $validated);
+        \Log::info('API Response:', [$response]);
+
+        $apiResponse = $response;
+
+        if (isset($apiResponse['message']) && isset($apiResponse['errors'])) {
+        throw new \Exception($apiResponse['message'] . ' Details: ' . json_encode($apiResponse['errors']));
+        }
+
+        if (!isset($apiResponse['success']) || !$apiResponse['success']) {
+        throw new \Exception('API muvaffaqiyatsiz: ' . json_encode($apiResponse));
+        }
+
+        return response()->json($apiResponse, 200);
+
+        } catch (\Exception $e) {
+        \Log::error('API Error:', ['error' => $e->getMessage(), 'payload' => $validated]);
+        return response()->json([
+        'success' => false,
+        'message' => 'Xato: ' . $e->getMessage(),
+        ], 500);
+        }
+    }
+
     
     public function test_results()
     {
@@ -379,6 +416,26 @@ dd($apiResponse);
         $chapter_result_data = collect(data_get($chapter_result_response, 'data', []))->firstWhere('id', $chapter_test_id);
         // dd($chapter_result_data);
         return view('user.test-results', compact('userData', 'chapter_result_data'));
+    }
+
+    public function final_test_results()
+    {
+        $user = $this->requireUserOrRedirect();
+        if ($user instanceof \Illuminate\Http\RedirectResponse) {
+        return $user;
+        }
+
+        $response = ApiService::getFromApiForUser('profile/me');
+        $userData = data_get($response, 'data', []);
+        if(!$userData) {
+            return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
+        }
+
+        $final_test_id=session('test_id');
+        $final_test_result_response = ApiService::getFromApiForUser("test/chapter-test-history");
+        $final_test_result_data = collect(data_get($final_test_result_response, 'data', []))->firstWhere('id', $final_test_id);
+        // dd($final_test_result_data);
+        return view('user.final-test-results', compact('userData', 'final_test_result_data'));
     }
 
     public function logout(Request $request)

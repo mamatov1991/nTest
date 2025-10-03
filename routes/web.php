@@ -45,6 +45,9 @@ Route::middleware(['web', 'auth.student'])
         Route::post('/user-save-remaining-time', [UserController::class, 'save_remaining_time'])->name('save.remaining.time');
         Route::post('/test-submit', [UserController::class, 'submitTest'])->name('submit.test');
         Route::get('/test-submit', [UserController::class, 'submitTest'])->name('submit.test');
+        Route::post('/final-test-submit', [UserController::class, 'submitFinalTest'])->name('submit.final.test');
+        Route::get('/final-test-submit', [UserController::class, 'submitFinalTest'])->name('submit.final.test');
         Route::get('/test-results',    [UserController::class, 'test_results'])->name('test.results');
+        Route::get('/final-test-results',    [UserController::class, 'final_test_results'])->name('final.test.results');
         Route::get('/logout',          [UserController::class, 'logout'])->name('logout');
     });
