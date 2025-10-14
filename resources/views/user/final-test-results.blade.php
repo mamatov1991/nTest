@@ -6,7 +6,7 @@
 
                         <div class="col-lg-12">
                         <h5 class="text-center">
-                        {{ $chapter_result_data['chapter_id']['subject']['name'] ?? '' }} ({{ $chapter_result_data['chapter_id']['test_type']['name'] ?? '' }})
+                        {{ $final_test_result_data['final_test']['subject']['name'] ?? '' }} ({{ $final_test_result_data['final_test']['test_type']['name'] ?? '' }})
                         </h5>
                             <div class="rbt-dashboard-content bg-color-white rbt-shadow-box mb--60">
                                 <div class="inner">
@@ -17,16 +17,16 @@
                             <div id="question-1" class="question">
                                 <div class="quize-top-meta">
                                     <div class="quize-top-left">
-                                        <span>Bo‘lim nomi: <strong>{{ $chapter_result_data['chapter_id']['name'] ?? '' }}</strong></span>
-                                        <span>Savollar soni: <strong>{{ count($chapter_result_data['results'] ?? []) }} ta</strong></span>
+                                        <span>Yakuniy test: <strong>{{ $final_test_result_data['final_test']['name'] ?? '' }}</strong></span>
+                                        <span>Savollar soni: <strong>{{ count($final_test_result_data['results'] ?? []) }} ta</strong></span>
 
                                     </div>
                                     <div class="quize-top-right">
                                     @php
                                     use Carbon\Carbon;
 
-                                    $start = Carbon::parse($chapter_result_data['start_at']);
-                                    $end   = Carbon::parse($chapter_result_data['end_at']);
+                                    $start = Carbon::parse($final_test_result_data['start_at']);
+                                    $end   = Carbon::parse($final_test_result_data['end_at']);
                                     $spent = $end->diff($start)->format('%i:%S');
                                     @endphp
 

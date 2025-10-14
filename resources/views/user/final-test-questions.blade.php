@@ -42,21 +42,35 @@
         {{-- Choose Option --}}
         @if($question['type'] == 'choose_option')
             <div class="question d-none" id="question-{{ $loop->iteration }}">
-                <div class="question-text mt--30">
+                
+                    <div class="row mt--30">
+                    @if( Str::length($question['instruction']) > 25 )
+                    <p>{!! Str::length($question['instruction']) !!}</p>
+                    <div class="col-lg-12">
+                    <div style="height: 300px; width: 100%; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+                        {!! $question['instruction'] !!}        
+                    </div>
+                    </div>
+                    @endif
+                    
+                    <div class="col-lg-12">
+                    <div class="question-text mt--30">
                     <span>{{ $loop->iteration }}.</span> 
-                    <span>{!! $question['id'] !!} {!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
+                    <span> {!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
+                    </div>
+                    </div>
                 </div>
                 <div class="row g-3 mt-2">
                     @foreach ($question['options'] ?? [] as $optIndex => $option)
                         <div class="col-lg-12">
                             <p class="rbt-checkbox-wrapper mb-2">
                                 <input class="form-check-input answer-option"
-                                       type="radio"
-                                       name="question_{{ $loop->iteration }}"
-                                       data-question-id="{{ $question['id'] ?? 'unknown' }}"
-                                       value="{{ $option['id'] ?? '' }}"
-                                       id="option-{{ $loop->iteration }}-{{ $optIndex }}">
-                                <label class="form-check-label" for="option-{{ $loop->iteration }}-{{ $optIndex }}">
+       type="radio"
+       name="question_{{ $question['detail_id'] ?? $loop->parent->iteration }}"
+       data-question-id="{{ $question['detail_id'] ?? 'unknown' }}"
+       value="{{ $option['id'] ?? '' }}"
+       id="option-{{ $question['detail_id'] ?? $loop->parent->iteration }}-{{ $optIndex }}">
+                                <label class="form-check-label" for="option-{{ $question['detail_id'] ?? $loop->parent->iteration }}-{{ $optIndex }}">
                                     {{ chr(65 + $optIndex) }}) {{ $option['body'] ?? 'Variant yo‘q' }}
                                 </label>
                             </p>
@@ -79,7 +93,41 @@
                             <input name="question_{{ $loop->iteration }}" 
                                    type="text" 
                                    class="answer-text"
-                                   data-question-id="{{ $question['id'] ?? 'unknown' }}"
+                                   data-question-id="{{ $question['detail_id'] ?? 'unknown' }}"
+                                   placeholder="Javobni shu yerga yozing...">
+                            <span class="focus-border"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+         {{-- Double Fill Gap --}}
+        @if($question['type'] == 'double_fill_gap')
+            <div class="question d-none" id="question-{{ $loop->iteration }}">
+                <div class="question-text mt--30">
+                    <span>{{ $loop->iteration }}.</span> 
+                    <span>{!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
+                </div>
+                <div class="row g-3 mt-2">
+                    <div class="col-lg-12">
+                        <span>{!! $question['question1'] ?? 'Savol matni yo‘q' !!}</span>
+                        <div class="form-group">
+                            <input name="question_{{ $loop->iteration }}" 
+                                   type="text" 
+                                   class="answer-text"
+                                   data-question-id="{{ $question['detail_id'] ?? 'unknown' }}"
+                                   placeholder="Javobni shu yerga yozing...">
+                            <span class="focus-border"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <span>{!! $question['question2'] ?? 'Savol matni yo‘q' !!}</span>
+                        <div class="form-group">
+                            <input name="question_{{ $loop->iteration }}" 
+                                   type="text" 
+                                   class="answer-text"
+                                   data-question-id="{{ $question['detail_id'].$question['id'] ?? 'unknown' }}"
                                    placeholder="Javobni shu yerga yozing...">
                             <span class="focus-border"></span>
                         </div>
@@ -97,7 +145,7 @@
                             <h5 class="text-center">ESSE</h5>
                             <div class="question-text mt--30">
                                 <span>{{ $loop->iteration }}.</span> 
-                                <span>{!! $question['id'] !!} {!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
+                                <span>{!! $question['detail_id'] !!} {!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
                             </div>
                         </div>
                     </div>
@@ -108,7 +156,7 @@
                                 <textarea style="min-height: 456px;" 
                                           name="question_{{ $loop->iteration }}"
                                           class="answer-textarea"
-                                          data-question-id="{{ $question['id'] ?? 'unknown' }}"
+                                          data-question-id="{{ $question['detail_id'] ?? 'unknown' }}"
                                           placeholder="Esse matnini shu yerga yozing..."></textarea>
                                 <span class="focus-border"></span>
                             </div>
@@ -156,17 +204,24 @@ document.addEventListener("DOMContentLoaded", function() {
     const totalQuestions = {{ count($final_test_questions) }};
     const isNewTest = {{ $isNewTest ? 'true' : 'false' }};
 
-    // Javoblarni xavfsiz yuklash
+    // ✅ Javoblarni xavfsiz yuklash – endi {qId: {answer, type}} shaklida
     let answers;
     let storedAnswers = localStorage.getItem('quizAnswers');
     if (storedAnswers && storedAnswers !== 'null' && storedAnswers !== 'undefined') {
         try {
             answers = JSON.parse(storedAnswers);
+            // Eski formatdan yangi formatga o'tkazish (agar type yo'q bo'lsa)
+            Object.keys(answers).forEach(qId => {
+                if (typeof answers[qId] === 'string') {
+                    answers[qId] = { answer: answers[qId], type: 'unknown' }; // Type ni keyinroq DOM dan tiklash mumkin
+                }
+            });
         } catch (e) {
             answers = {};
         }
     } else {
-        answers = {{ json_encode($userAnswers ?: []) }};
+        answers = {{ json_encode($userAnswers ?: []) }}; // Backend dan kelgan ham shunday formatda bo'lishi kerak
+        // Backend dan type yo'q bo'lsa, quyida tiklash
     }
 
     let remainingTime = localStorage.getItem('remainingTime') ? parseInt(localStorage.getItem('remainingTime')) : {{ $remaining_time }};
@@ -184,6 +239,13 @@ document.addEventListener("DOMContentLoaded", function() {
     const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
     const countdownElem = document.getElementById('countdown');
 
+    // ✅ Type ni aniqlash funksiyasi (class lardan)
+    function getTypeFromElement(el) {
+        if (el.classList.contains('answer-option')) return 'choose_option';
+        if (el.classList.contains('answer-text') || el.classList.contains('answer-textarea')) return 'fill_gap'; // Essay uchun 'essay' qo'shing agar kerak
+        return 'unknown'; // Default
+    }
+
     // Vaqt formatlash
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
@@ -199,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (remainingTime <= 0) {
                 clearInterval(countdownInterval);
                 alert("Vaqt tugadi!");
-                submitTest();
+                submitFinalTest();
             } else {
                 countdownElem.textContent = formatTime(remainingTime);
                 localStorage.setItem('remainingTime', remainingTime);
@@ -219,7 +281,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Radio tugmalar uchun javobni tiklash
         questionElem.querySelectorAll('.answer-option').forEach(opt => {
-            if (answers[opt.dataset.questionId] === opt.value) {
+            const qId = opt.dataset.questionId;
+            if (answers[qId] && answers[qId].answer === opt.value) {
                 opt.checked = true;
             } else {
                 opt.checked = false;
@@ -229,14 +292,23 @@ document.addEventListener("DOMContentLoaded", function() {
         // Matnli maydonlar (fill gap, esse) uchun javobni tiklash
         questionElem.querySelectorAll('.answer-text, .answer-textarea').forEach(el => {
             const qId = el.dataset.questionId;
-            if (answers.hasOwnProperty(qId)) {
-                el.value = answers[qId];
+            if (answers[qId] && answers[qId].answer) {
+                el.value = answers[qId].answer;
             } else {
                 el.value = '';
             }
         });
 
-        // Navigatsiya tugmalarini yangilash — faqat joriy savol ID sini ishlatish
+        // ✅ Type ni tiklash (agar 'unknown' bo'lsa, DOM dan)
+        questionElem.querySelectorAll('[data-question-id]').forEach(el => {
+            const qId = el.dataset.questionId;
+            if (answers[qId] && answers[qId].type === 'unknown') {
+                answers[qId].type = getTypeFromElement(el);
+                localStorage.setItem('quizAnswers', JSON.stringify(answers));
+            }
+        });
+
+        // Navigatsiya tugmalarini yangilash
         const navButtons = document.querySelectorAll('.rbt-pagination li a');
         navButtons.forEach(btn => {
             btn.parentElement.classList.remove('active');
@@ -247,7 +319,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const inputOrRadio = questionDiv.querySelector('[data-question-id]');
             const qId = inputOrRadio ? inputOrRadio.dataset.questionId : null;
 
-            if (qId && answers.hasOwnProperty(qId) && answers[qId] !== '') {
+            if (qId && answers[qId] && answers[qId].answer && answers[qId].answer !== '') {
                 btn.classList.add('answered');
             } else {
                 btn.classList.remove('answered');
@@ -266,23 +338,29 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Radio tugmalar uchun hodisa
+    // ✅ Radio tugmalar uchun hodisa – type qo'shildi
     document.querySelectorAll('.answer-option').forEach(opt => {
         opt.addEventListener('change', function() {
             const qId = this.dataset.questionId;
-            answers[qId] = this.value;
+            answers[qId] = {
+                answer: this.value,
+                type: getTypeFromElement(this)
+            };
             localStorage.setItem('quizAnswers', JSON.stringify(answers));
             const currentNavBtn = document.querySelector(`.rbt-pagination li a[data-index="${currentQuestion}"]`);
             if (currentNavBtn) currentNavBtn.classList.add('answered');
         });
     });
 
-    // Matn kiritish (fill gap, esse) uchun hodisa
+    // ✅ Matn kiritish uchun hodisa – type qo'shildi
     document.querySelectorAll('.answer-text, .answer-textarea').forEach(el => {
         el.addEventListener('input', function() {
             const qId = this.dataset.questionId;
-            const value = this.value; // .trim() qilmasa ham bo'ladi, lekin kerak bo'lsa qo'shing
-            answers[qId] = value;
+            const value = this.value;
+            answers[qId] = {
+                answer: value,
+                type: getTypeFromElement(this)
+            };
             localStorage.setItem('quizAnswers', JSON.stringify(answers));
 
             const currentNavBtn = document.querySelector(`.rbt-pagination li a[data-index="${currentQuestion}"]`);
@@ -305,16 +383,17 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Testni yuborish
-    function submitTest() {
+    // ✅ Testni yuborish – payload to'g'ri shakllandi
+    function submitFinalTest() {
         const testId = {{ $test_id ?? 'null' }};
         const payload = {
-            test_id: parseInt(testId),
+            test_id: parseInt(testId), // Controller da rename qilinadi
             answers: Object.entries(answers)
-                .filter(([qId, ans]) => ans !== '' && ans !== null && ans !== undefined)
-                .map(([qId, ans]) => ({
+                .filter(([qId, obj]) => obj && obj.answer !== '' && obj.answer !== null && obj.answer !== undefined)
+                .map(([qId, obj]) => ({
                     id: parseInt(qId),
-                    answer: ans // ✅ matn yoki variant ID — to'g'ri saqlanadi
+                    type: obj.type, // ✅ Type qo'shildi
+                    answer: obj.answer
                 }))
         };
 
@@ -344,7 +423,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (currentQuestion < totalQuestions) {
                 showQuestion(currentQuestion + 1);
             } else {
-                submitTest();
+                submitFinalTest();
             }
         });
     }
@@ -358,11 +437,11 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-<script>
+<!-- <script>
 document.querySelectorAll('.answer-option').forEach(opt => {
 console.log('Question ID:', opt.dataset.questionId, 'Value:', opt.value);
 });
-</script>
+</script> -->
 
 
 @endsection

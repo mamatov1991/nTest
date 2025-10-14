@@ -273,7 +273,7 @@ class UserController extends Controller
         $questionsKey = 'final_test_questions_' . $finalTestId . '_' . auth()->id();
         $apiResponse = ApiService::getFromApiForUser('final-test/start-test/' . $finalTestId);
         $all_final_test_params = data_get($apiResponse, 'data', []);
-        dd($all_final_test_params);
+        //dd($all_final_test_params);
         // dd($all_final_test_params);
         if ($isNewTest || !session()->has($questionsKey)) {
         
@@ -359,43 +359,48 @@ class UserController extends Controller
     }
 
     public function submitFinalTest(Request $request)
-    {
-        $validated = $request->validate([
+{
+    $validated = $request->validate([
         'test_id' => 'required|integer',
         'answers' => 'required|array|min:1',
         'answers.*.id' => 'required|integer',
-        'answers.*.type' => 'required|string',
+        'answers.*.type' => 'required|string|in:choose_option,fill_gap,essay', // ✅ Type qo'shildi (essay ham qo'shdim, agar kerak bo'lsa)
         'answers.*.answer' => 'required|string',
-        ]);
+    ]);
 
-        $final_test_id=session('test_id');
+    $final_test_id = session('test_id'); // Bu hali ham log uchun saqlanadi, lekin payloadda ishlatilmaydi
 
-        \Log::info('Submitted Test Payload:', $validated);
+    \Log::info('Submitted Test Payload:', $validated);
 
-        try {
-        $response = ApiService::postFromApiForUser('final-test/finish-test', $validated);
+    try {
+        // ✅ Payload ni o'zgartirish: test_id → student_final_test_id
+        $payload = $validated;
+        $payload['student_final_test_id'] = $payload['test_id']; // String ga o'tkazish mumkin: (string)$payload['test_id']
+        unset($payload['test_id']); // Eski maydonni olib tashlash
+
+        $response = ApiService::postFromApiForUser('final-test/finish-test', $payload);
         \Log::info('API Response:', [$response]);
 
         $apiResponse = $response;
 
         if (isset($apiResponse['message']) && isset($apiResponse['errors'])) {
-        throw new \Exception($apiResponse['message'] . ' Details: ' . json_encode($apiResponse['errors']));
+            throw new \Exception($apiResponse['message'] . ' Details: ' . json_encode($apiResponse['errors']));
         }
 
         if (!isset($apiResponse['success']) || !$apiResponse['success']) {
-        throw new \Exception('API muvaffaqiyatsiz: ' . json_encode($apiResponse));
+            throw new \Exception('API muvaffaqiyatsiz: ' . json_encode($apiResponse));
         }
 
         return response()->json($apiResponse, 200);
 
-        } catch (\Exception $e) {
+    } catch (\Exception $e) {
         \Log::error('API Error:', ['error' => $e->getMessage(), 'payload' => $validated]);
         return response()->json([
-        'success' => false,
-        'message' => 'Xato: ' . $e->getMessage(),
+            'success' => false,
+            'message' => 'Xato: ' . $e->getMessage(),
         ], 500);
-        }
     }
+}
 
     
     public function test_results()
@@ -432,7 +437,7 @@ class UserController extends Controller
         }
 
         $final_test_id=session('test_id');
-        $final_test_result_response = ApiService::getFromApiForUser("test/chapter-test-history");
+        $final_test_result_response = ApiService::getFromApiForUser("final-test/results");
         $final_test_result_data = collect(data_get($final_test_result_response, 'data', []))->firstWhere('id', $final_test_id);
         // dd($final_test_result_data);
         return view('user.final-test-results', compact('userData', 'final_test_result_data'));
