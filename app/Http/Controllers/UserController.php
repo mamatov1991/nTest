@@ -278,17 +278,17 @@ class UserController extends Controller
         if ($isNewTest || !session()->has($questionsKey)) {
         
         // dd($apiResponse);
-        $test_id = data_get($apiResponse, 'data.student_final_test.student_final_test_id', []);
+        $student_final_test_id = data_get($apiResponse, 'data.student_final_test.student_final_test_id', []);
         $final_test_questions = data_get($apiResponse, 'data.questions', []);
 
-        session()->put('test_id', $test_id);
+        session()->put('student_final_test_id', $student_final_test_id);
         session()->put($questionsKey, $final_test_questions);
         session()->forget(['remaining_time', 'answers_' . auth()->id()]);
         } else {
         $final_test_questions = session($questionsKey);
         }
 
-        $test_id = session('test_id');
+        $student_final_test_id = session('student_final_test_id');
         // dd('Test ID: ' . $test_id);
         $userId = auth()->id();
         $answersKey = 'answers_' . $userId;
@@ -298,7 +298,7 @@ class UserController extends Controller
         $remaining_time = session('remaining_time', $time_limit);
 
         session([
-        'test_id' => $test_id,
+        'student_final_test_id' => $student_final_test_id,
         'remaining_time' => $remaining_time,
         ]);
 
@@ -311,7 +311,7 @@ class UserController extends Controller
         'all_final_test_params',
         'subject_name',
         'chapter_name',
-        'test_id',
+        'student_final_test_id',
         'userAnswers',
         'remaining_time',
         'isNewTest'
@@ -358,49 +358,45 @@ class UserController extends Controller
         }
     }
 
+
     public function submitFinalTest(Request $request)
-{
-    $validated = $request->validate([
-        'test_id' => 'required|integer',
-        'answers' => 'required|array|min:1',
-        'answers.*.id' => 'required|integer',
-        'answers.*.type' => 'required|string|in:choose_option,fill_gap,essay', // ✅ Type qo'shildi (essay ham qo'shdim, agar kerak bo'lsa)
-        'answers.*.answer' => 'required|string',
-    ]);
-
-    $final_test_id = session('test_id'); // Bu hali ham log uchun saqlanadi, lekin payloadda ishlatilmaydi
-
-    \Log::info('Submitted Test Payload:', $validated);
-
-    try {
-        // ✅ Payload ni o'zgartirish: test_id → student_final_test_id
-        $payload = $validated;
-        $payload['student_final_test_id'] = $payload['test_id']; // String ga o'tkazish mumkin: (string)$payload['test_id']
-        unset($payload['test_id']); // Eski maydonni olib tashlash
-
-        $response = ApiService::postFromApiForUser('final-test/finish-test', $payload);
-        \Log::info('API Response:', [$response]);
-
-        $apiResponse = $response;
-
-        if (isset($apiResponse['message']) && isset($apiResponse['errors'])) {
-            throw new \Exception($apiResponse['message'] . ' Details: ' . json_encode($apiResponse['errors']));
+    {
+        $validated = $request->validate([
+            'student_final_test_id' => 'required|integer', // ❌ exists yo'q — chunki jadval localda mavjud emas
+            'answers' => 'required|array|min:1',
+            'answers.*.id' => 'required|integer', // ❌ exists yo'q
+            'answers.*.type' => 'required|string|in:choose_option,fill_gap,essay',
+            'answers.*.answer' => 'required|string',
+        ]);
+    
+        \Log::info('Yakuniy test uchun yuborilayotgan payload:', $validated);
+    
+        try {
+            $response = ApiService::postFromApiForUser('final-test/finish-test', $validated);
+            \Log::info('API javobi (yakuniy test):', [$response]);
+    
+            if (isset($response['message']) && isset($response['errors'])) {
+                throw new \Exception($response['message'] . ' Details: ' . json_encode($response['errors']));
+            }
+    
+            if (!isset($response['success']) || !$response['success']) {
+                throw new \Exception('API muvaffaqiyatsiz: ' . json_encode($response));
+            }
+    
+            return response()->json($response, 200);
+    
+        } catch (\Exception $e) {
+            \Log::error('Yakuniy testni yuborishda xatolik:', [
+                'error' => $e->getMessage(),
+                'payload' => $validated
+            ]);
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'Xato: ' . $e->getMessage(),
+            ], 500);
         }
-
-        if (!isset($apiResponse['success']) || !$apiResponse['success']) {
-            throw new \Exception('API muvaffaqiyatsiz: ' . json_encode($apiResponse));
-        }
-
-        return response()->json($apiResponse, 200);
-
-    } catch (\Exception $e) {
-        \Log::error('API Error:', ['error' => $e->getMessage(), 'payload' => $validated]);
-        return response()->json([
-            'success' => false,
-            'message' => 'Xato: ' . $e->getMessage(),
-        ], 500);
     }
-}
 
     
     public function test_results()
@@ -436,10 +432,10 @@ class UserController extends Controller
             return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
         }
 
-        $final_test_id=session('test_id');
+        $final_test_id=session('student_final_test_id');
         $final_test_result_response = ApiService::getFromApiForUser("final-test/results");
         $final_test_result_data = collect(data_get($final_test_result_response, 'data', []))->firstWhere('id', $final_test_id);
-        // dd($final_test_result_data);
+        dd($final_test_result_data);
         return view('user.final-test-results', compact('userData', 'final_test_result_data'));
     }
 

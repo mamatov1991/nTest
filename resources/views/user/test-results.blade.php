@@ -81,7 +81,7 @@
             @foreach($result['options'] as $optionIndex => $option)
                 @php
                     // Foydalanuvchi tanlagan variant
-                    $isUserAnswer = $result['answer'] === $option['id'];
+                    $isUserAnswer = $result['answer_id'] === $option['id'];
                     // To‘g‘ri variant
                     $isCorrect = $option['is_correct'];
                 @endphp

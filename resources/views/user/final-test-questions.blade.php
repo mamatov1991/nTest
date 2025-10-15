@@ -10,7 +10,7 @@
 <div class="content">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <form id="quiz-form" class="quiz-form-wrapper">
-    <input type="hidden" name="test_id" value="{{ $test_id }}">
+    <input type="hidden" name="student_final_test_id" value="{{ $student_final_test_id }}">
 
     <div class="quize-top-meta mb-3">
         <div class="quize-top-left">
@@ -113,10 +113,10 @@
                     <div class="col-lg-12">
                         <span>{!! $question['question1'] ?? 'Savol matni yo‘q' !!}</span>
                         <div class="form-group">
-                            <input name="question_{{ $loop->iteration }}" 
+                            <input name="question1_{{ $loop->iteration }}" 
                                    type="text" 
                                    class="answer-text"
-                                   data-question-id="{{ $question['detail_id'] ?? 'unknown' }}"
+                                   data-question-id="{{ $question['detail_id'] . 5 . $question['id'] ?? 'unknown' }}"
                                    placeholder="Javobni shu yerga yozing...">
                             <span class="focus-border"></span>
                         </div>
@@ -124,13 +124,14 @@
                     <div class="col-lg-12">
                         <span>{!! $question['question2'] ?? 'Savol matni yo‘q' !!}</span>
                         <div class="form-group">
-                            <input name="question_{{ $loop->iteration }}" 
+                            <input name="question2_{{ $loop->iteration }}" 
                                    type="text" 
                                    class="answer-text"
                                    data-question-id="{{ $question['detail_id'].$question['id'] ?? 'unknown' }}"
                                    placeholder="Javobni shu yerga yozing...">
                             <span class="focus-border"></span>
                         </div>
+                        <input type="hidden" name="question_{{ $loop->iteration }}" value="" data-question-id="{{ $question['detail_id'] ?? 'unknown' }}">
                     </div>
                 </div>
             </div>
@@ -200,28 +201,87 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+    // Har bir savol blokini topamiz
+    document.querySelectorAll('.row.g-3.mt-2').forEach(block => {
+        const input1 = block.querySelector('input[name^="question1_"]');
+        const input2 = block.querySelector('input[name^="question2_"]');
+        const hidden = block.querySelector('input[type="hidden"][name^="question_"]');
+
+        if (input1 && input2 && hidden) {
+            function updateHiddenValue() {
+                const val1 = input1.value.trim();
+                const val2 = input2.value.trim();
+
+                // Ikkalasini bitta stringga birlashtiramiz
+                hidden.value = `${val1}${val1 && val2 ? ' | ' : ''}${val2}`;
+                // ✅ Konsol uchun kuzatish
+                console.log(`Hidden field (${hidden.name}) → ${hidden.value}`);
+            }
+
+            // Har safar yozilganda yangilansin
+            input1.addEventListener('input', updateHiddenValue);
+            input2.addEventListener('input', updateHiddenValue);
+
+            // Dastlabki holatda ham to‘ldir
+            updateHiddenValue();
+        }
+    });
+});
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
     let currentQuestion = 1;
     const totalQuestions = {{ count($final_test_questions) }};
     const isNewTest = {{ $isNewTest ? 'true' : 'false' }};
 
-    // ✅ Javoblarni xavfsiz yuklash – endi {qId: {answer, type}} shaklida
+    // 🔐 Identifikator: avval student_final_test_id, bo'lmasa test_id
+    const studentFinalTestId = {{ $student_final_test_id ?? 'null' }};
+    const fallbackTestId = {{ $test_id ?? 'null' }};
+    const finalTestId = (studentFinalTestId !== null && studentFinalTestId !== undefined && studentFinalTestId !== 'null')
+        ? parseInt(studentFinalTestId, 10)
+        : ((fallbackTestId !== null && fallbackTestId !== undefined && fallbackTestId !== 'null') ? parseInt(fallbackTestId, 10) : null);
+
+    if (finalTestId === null || isNaN(finalTestId)) {
+        console.error('❌ finalTestId aniqlanmadi yoki noto‘g‘ri formatda.');
+        alert('Xatolik: test identifikatori topilmadi.');
+    }
+
+    // 🧪 Debug: RAM va localStorage holatini chiqarish
+    function debugDump(label = '') {
+        const ls = localStorage.getItem('quizAnswers');
+        let parsed = null;
+        try { parsed = JSON.parse(ls); } catch(e) {}
+        console.log(`🧪 ${label} | answers (RAM):`, answers);
+        console.log(`🧪 ${label} | localStorage (quizAnswers):`, parsed);
+    }
+
+    window.debugQuiz = function() {
+        const v = JSON.parse(localStorage.getItem('quizAnswers'));
+        console.log('🔎 debugQuiz():', v);
+        return v;
+    };
+
+    // ✅ Javoblarni xavfsiz yuklash – {qId: {answer, type}}
     let answers;
     let storedAnswers = localStorage.getItem('quizAnswers');
     if (storedAnswers && storedAnswers !== 'null' && storedAnswers !== 'undefined') {
         try {
             answers = JSON.parse(storedAnswers);
-            // Eski formatdan yangi formatga o'tkazish (agar type yo'q bo'lsa)
             Object.keys(answers).forEach(qId => {
                 if (typeof answers[qId] === 'string') {
-                    answers[qId] = { answer: answers[qId], type: 'unknown' }; // Type ni keyinroq DOM dan tiklash mumkin
+                    answers[qId] = { answer: answers[qId], type: 'unknown' };
                 }
             });
+            console.log('📥 LocalStorage-dan yuklandi (quizAnswers):', answers);
         } catch (e) {
+            console.warn('⚠️ LocalStorage parse xatosi, bo‘sh obyektga o‘tyapman:', e);
             answers = {};
         }
     } else {
-        answers = {{ json_encode($userAnswers ?: []) }}; // Backend dan kelgan ham shunday formatda bo'lishi kerak
-        // Backend dan type yo'q bo'lsa, quyida tiklash
+        answers = {{ json_encode($userAnswers ?: []) }};
+        console.log('📥 Backend (userAnswers) dan yuklandi:', answers);
     }
 
     let remainingTime = localStorage.getItem('remainingTime') ? parseInt(localStorage.getItem('remainingTime')) : {{ $remaining_time }};
@@ -233,17 +293,18 @@ document.addEventListener("DOMContentLoaded", function() {
         localStorage.removeItem('remainingTime');
         answers = {};
         remainingTime = {{ $remaining_time }};
+        console.log('🧹 isNewTest=true — localStorage tozalandi.');
     }
 
     const submitBtn = document.getElementById('submit-test');
     const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
     const countdownElem = document.getElementById('countdown');
 
-    // ✅ Type ni aniqlash funksiyasi (class lardan)
+    // ✅ Type ni aniqlash (DOM class lardan)
     function getTypeFromElement(el) {
         if (el.classList.contains('answer-option')) return 'choose_option';
-        if (el.classList.contains('answer-text') || el.classList.contains('answer-textarea')) return 'fill_gap'; // Essay uchun 'essay' qo'shing agar kerak
-        return 'unknown'; // Default
+        if (el.classList.contains('answer-text') || el.classList.contains('answer-textarea')) return 'fill_gap';
+        return 'unknown';
     }
 
     // Vaqt formatlash
@@ -260,6 +321,7 @@ document.addEventListener("DOMContentLoaded", function() {
             remainingTime--;
             if (remainingTime <= 0) {
                 clearInterval(countdownInterval);
+                console.log('⏱️ Vaqt tugadi — auto submit!');
                 alert("Vaqt tugadi!");
                 submitFinalTest();
             } else {
@@ -279,7 +341,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!questionElem) return;
         questionElem.classList.remove('d-none');
 
-        // Radio tugmalar uchun javobni tiklash
+        // Radio tiklash
         questionElem.querySelectorAll('.answer-option').forEach(opt => {
             const qId = opt.dataset.questionId;
             if (answers[qId] && answers[qId].answer === opt.value) {
@@ -289,7 +351,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Matnli maydonlar (fill gap, esse) uchun javobni tiklash
+        // Matnli maydonlarni tiklash
         questionElem.querySelectorAll('.answer-text, .answer-textarea').forEach(el => {
             const qId = el.dataset.questionId;
             if (answers[qId] && answers[qId].answer) {
@@ -299,7 +361,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // ✅ Type ni tiklash (agar 'unknown' bo'lsa, DOM dan)
+        // Type ni tiklash (unknown bo'lsa)
         questionElem.querySelectorAll('[data-question-id]').forEach(el => {
             const qId = el.dataset.questionId;
             if (answers[qId] && answers[qId].type === 'unknown') {
@@ -308,7 +370,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Navigatsiya tugmalarini yangilash
+        // Navigatsiya status
         const navButtons = document.querySelectorAll('.rbt-pagination li a');
         navButtons.forEach(btn => {
             btn.parentElement.classList.remove('active');
@@ -326,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Joriy savolni belgilash
+        // Joriy savol
         const navBtn = document.querySelector(`.rbt-pagination li a[data-index="${index}"]`);
         if (navBtn) {
             navBtn.parentElement.classList.add('active');
@@ -336,9 +398,11 @@ document.addEventListener("DOMContentLoaded", function() {
         if (btnText) {
             btnText.textContent = currentQuestion === totalQuestions ? 'Testni tugatish' : 'Keyingi';
         }
+
+        console.log(`📄 showQuestion(${index}) — current answers:`, answers);
     }
 
-    // ✅ Radio tugmalar uchun hodisa – type qo'shildi
+    // ✅ Radio hodisasi
     document.querySelectorAll('.answer-option').forEach(opt => {
         opt.addEventListener('change', function() {
             const qId = this.dataset.questionId;
@@ -347,12 +411,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 type: getTypeFromElement(this)
             };
             localStorage.setItem('quizAnswers', JSON.stringify(answers));
+            debugDump(`change:qId=${qId}`);
+
             const currentNavBtn = document.querySelector(`.rbt-pagination li a[data-index="${currentQuestion}"]`);
             if (currentNavBtn) currentNavBtn.classList.add('answered');
         });
     });
 
-    // ✅ Matn kiritish uchun hodisa – type qo'shildi
+    // ✅ Matn hodisasi
     document.querySelectorAll('.answer-text, .answer-textarea').forEach(el => {
         el.addEventListener('input', function() {
             const qId = this.dataset.questionId;
@@ -362,6 +428,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 type: getTypeFromElement(this)
             };
             localStorage.setItem('quizAnswers', JSON.stringify(answers));
+            debugDump(`input:qId=${qId}`);
 
             const currentNavBtn = document.querySelector(`.rbt-pagination li a[data-index="${currentQuestion}"]`);
             if (currentNavBtn) {
@@ -374,7 +441,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Navigatsiya tugmalariga bosish
+    // Navigatsiya tugmalari
     const navButtons = document.querySelectorAll('.rbt-pagination li a');
     navButtons.forEach(btn => {
         btn.addEventListener('click', function(e) {
@@ -383,19 +450,28 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // ✅ Testni yuborish – payload to'g'ri shakllandi
+    // ✅ Yuborish: talab qilingan formatga mos
     function submitFinalTest() {
-        const testId = {{ $test_id ?? 'null' }};
+        if (finalTestId === null || isNaN(finalTestId)) {
+            console.error('❌ finalTestId mavjud emas yoki noto‘g‘ri.');
+            alert('Xatolik: test identifikatori topilmadi.');
+            return;
+        }
+
+        const answersArray = Object.entries(answers)
+            .filter(([_, obj]) => obj && obj.answer !== '' && obj.answer !== null && obj.answer !== undefined)
+            .map(([qId, obj]) => ({
+                id: parseInt(qId, 10),
+                type: obj.type || 'unknown',
+                answer: obj.answer
+            }));
+
         const payload = {
-            test_id: parseInt(testId), // Controller da rename qilinadi
-            answers: Object.entries(answers)
-                .filter(([qId, obj]) => obj && obj.answer !== '' && obj.answer !== null && obj.answer !== undefined)
-                .map(([qId, obj]) => ({
-                    id: parseInt(qId),
-                    type: obj.type, // ✅ Type qo'shildi
-                    answer: obj.answer
-                }))
+            student_final_test_id: finalTestId, // ✅ Endi RAQAM sifatida!
+            answers: answersArray
         };
+
+        console.log('📦 Yuborilayotgan payload:', JSON.stringify(payload, null, 2));
 
         fetch("{{ route('user.submit.final.test') }}", {
             method: "POST",
@@ -406,14 +482,23 @@ document.addEventListener("DOMContentLoaded", function() {
             },
             body: JSON.stringify(payload)
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                return res.json().then(err => Promise.reject(err));
+            }
+            return res.json();
+        })
         .then(data => {
+            console.log('✅ Server javobi:', data);
             localStorage.removeItem('quizAnswers');
             localStorage.removeItem('remainingTime');
             clearInterval(countdownInterval);
             window.location.href = "{{ route('user.final.test.results') }}";
         })
-        .catch(err => console.error('Yuborishda xatolik:', err));
+        .catch(err => {
+            console.error('❌ Yuborishda xatolik:', err);
+            alert('Xatolik yuz berdi: ' + (err.message || 'Noma\'lum xato'));
+        });
     }
 
     // Submit tugmasi
@@ -434,8 +519,12 @@ document.addEventListener("DOMContentLoaded", function() {
         countdownElem.textContent = formatTime(remainingTime);
         startCountdown();
     }
+
+    debugDump('init');
 });
 </script>
+
+
 
 <!-- <script>
 document.querySelectorAll('.answer-option').forEach(opt => {

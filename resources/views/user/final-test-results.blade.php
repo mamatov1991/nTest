@@ -22,15 +22,8 @@
 
                                     </div>
                                     <div class="quize-top-right">
-                                    @php
-                                    use Carbon\Carbon;
+                                  
 
-                                    $start = Carbon::parse($final_test_result_data['start_at']);
-                                    $end   = Carbon::parse($final_test_result_data['end_at']);
-                                    $spent = $end->diff($start)->format('%i:%S');
-                                    @endphp
-
-                                    <span> Sarflangan vaqt: <strong>{{ $spent }}</strong></span>
                                     </div>
 
                                 </div>
