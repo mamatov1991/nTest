@@ -159,7 +159,7 @@
                                         <span>08</span>
                                     </div>
                                     <div class="feature-content">
-                                        <p class="feature-description">matablarga taʼlimni rivojlantirish boʻyicha konsalting xizmatlarini koʻrsatish.</p>
+                                        <p class="feature-description">ta’lim tashkilotlariga taʼlimni rivojlantirish boʻyicha konsalting xizmatlarini koʻrsatish.</p>
                                     </div>
                                 </div>
                             </div>
@@ -167,18 +167,7 @@
                             <!-- End Feature List  -->
                         </div>
 
-                        <div class="mt--20">
-                    <div class="rbt-brand-title-wrap">
-                        <h5 class="rbt-brand-title w-600 text-center mb-0">Homiylar va hamkorlar</h5>
-                    </div>
-                    <ul class="brand-list brand-style-3 justify-content-start justify-content-lg-between mt--10">
-                        <li><a href="#"><img src="assets/images/brand/partner-5.webp" alt="Brand Image"></a></li>
-                        <li><a href="#"><img src="assets/images/brand/partner-1.webp" alt="Brand Image"></a></li>
-                        <li><a href="#"><img src="assets/images/brand/partner-6.webp" alt="Brand Image"></a></li>
-                        <li><a href="#"><img src="assets/images/brand/partner-3.webp" alt="Brand Image"></a></li>
                         
-                    </ul>
-                </div>
                     </div>
                 </div>
             </div>
@@ -200,6 +189,9 @@
                 <div class="col-xl-3 col-lg-6 col-md-6 col-12">
                     <div class="pricing-table style-2">
                         <div class="pricing-header">
+                        @if($tarif['is_popular'] == 1)
+                        <div class="pricing-badge"><span>Ommabop</span></div>
+                        @endif
                             <h3 class="title">{{ $tarif['name'] }}</h3>
                             <span class="rbt-badge mb--35">{{ $tarif['description'] }}</span>
                             <div class="price-wrap">

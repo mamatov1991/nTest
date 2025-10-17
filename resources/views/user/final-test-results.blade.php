@@ -6,7 +6,7 @@
 
                         <div class="col-lg-12">
                         <h5 class="text-center">
-                        {{ $final_test_result_data['final_test']['subject']['name'] ?? '' }} ({{ $final_test_result_data['final_test']['test_type']['name'] ?? '' }})
+                        {{ $final_test_result_data['final_test']['subject']['name'] ?? '' }} ({{ $final_test_result_data['final_test']['type'] ?? '' }})
                         </h5>
                             <div class="rbt-dashboard-content bg-color-white rbt-shadow-box mb--60">
                                 <div class="inner">
@@ -18,7 +18,7 @@
                                 <div class="quize-top-meta">
                                     <div class="quize-top-left">
                                         <span>Yakuniy test: <strong>{{ $final_test_result_data['final_test']['name'] ?? '' }}</strong></span>
-                                        <span>Savollar soni: <strong>{{ count($final_test_result_data['results'] ?? []) }} ta</strong></span>
+                                        <span>Savollar soni: <strong>{{ count($final_test_result_data['details'] ?? []) }} ta</strong></span>
 
                                     </div>
                                     <div class="quize-top-right">
@@ -45,16 +45,27 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>1-variant</td>
-                                                    <td>34 ta</td>
-                                                    <td>25 ta</td>
-                                                    <td>9 ta</td>
-                                                    <td>56 ball</td>
-                                                    <td>12.09.2025</td>
-                                                </tr>
-
-                                            </tbody>
+    @php
+        $correct = 0;
+        $incorrect = 0;
+        $totalQuestions = count($final_test_result_data['details'] ?? []);
+        foreach ($final_test_result_data['details'] ?? [] as $detail) {
+            if ($detail['is_correct'] == 1) {
+                $correct++;
+            } else {
+                $incorrect++;
+            }
+        }
+    @endphp
+    <tr>
+        <td>{{ $final_test_result_data['final_test']['name'] ?? '' }}</td>
+        <td>{{ $totalQuestions }} ta</td>
+        <td>{{ $correct }} ta</td>
+        <td>{{ $incorrect }} ta</td>
+        <td>{{ $final_test_result_data['details'][0]['score'] ?? '' }}</td>
+        <td>{{ $final_test_result_data['details'][0]['created_at'] ?? '' }}</td>
+    </tr>
+</tbody>
 
                                         </table>
                                         <p><b>Izoh: </b> <i>Ochiq testlar va esse natijalari 3 kun ichida tekshiriladi. Umumiy ball va darajangizni <a href="#">Natijalar</a> bo‘limidan ko‘rishingiz mumkin bo‘ladi.</i></p>

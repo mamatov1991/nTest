@@ -47,7 +47,7 @@
                     @if( Str::length($question['instruction']) > 25 )
                     <p>{!! Str::length($question['instruction']) !!}</p>
                     <div class="col-lg-12">
-                    <div style="height: 300px; width: 100%; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+                    <div class="instruction">
                         {!! $question['instruction'] !!}        
                     </div>
                     </div>
@@ -102,40 +102,40 @@
             </div>
         @endif
 
-         {{-- Double Fill Gap --}}
-        @if($question['type'] == 'double_fill_gap')
-            <div class="question d-none" id="question-{{ $loop->iteration }}">
-                <div class="question-text mt--30">
-                    <span>{{ $loop->iteration }}.</span> 
-                    <span>{!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
-                </div>
-                <div class="row g-3 mt-2">
-                    <div class="col-lg-12">
-                        <span>{!! $question['question1'] ?? 'Savol matni yo‘q' !!}</span>
-                        <div class="form-group">
-                            <input name="question1_{{ $loop->iteration }}" 
-                                   type="text" 
-                                   class="answer-text"
-                                   data-question-id="{{ $question['detail_id'] . 5 . $question['id'] ?? 'unknown' }}"
-                                   placeholder="Javobni shu yerga yozing...">
-                            <span class="focus-border"></span>
-                        </div>
-                    </div>
-                    <div class="col-lg-12">
-                        <span>{!! $question['question2'] ?? 'Savol matni yo‘q' !!}</span>
-                        <div class="form-group">
-                            <input name="question2_{{ $loop->iteration }}" 
-                                   type="text" 
-                                   class="answer-text"
-                                   data-question-id="{{ $question['detail_id'].$question['id'] ?? 'unknown' }}"
-                                   placeholder="Javobni shu yerga yozing...">
-                            <span class="focus-border"></span>
-                        </div>
-                        <input type="hidden" name="question_{{ $loop->iteration }}" value="" data-question-id="{{ $question['detail_id'] ?? 'unknown' }}">
-                    </div>
-                </div>
+        {{-- Double Fill Gap --}}
+@if($question['type'] == 'double_fill_gap')
+<div class="question d-none" id="question-{{ $loop->iteration }}">
+    <div class="question-text mt--30">
+        <span>{{ $loop->iteration }}.</span>
+        <span>{!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
+    </div>
+    <div class="row g-3 mt-2">
+        <div class="col-lg-12">
+            <span>{!! $question['question1'] ?? 'Savol matni yo‘q' !!}</span>
+            <div class="form-group">
+                <input name="question1_{{ $loop->iteration }}" type="text" 
+                       class="answer-text double-gap-input" 
+                       data-question-id="{{ $question['detail_id'] ?? '' }}"
+                       data-gap="1"
+                       placeholder="Javobni shu yerga yozing...">
+                <span class="focus-border"></span>
             </div>
-        @endif
+        </div>
+        <div class="col-lg-12">
+            <span>{!! $question['question2'] ?? 'Savol matni yo‘q' !!}</span>
+            <div class="form-group">
+                <input name="question2_{{ $loop->iteration }}" type="text" 
+                       class="answer-text double-gap-input" 
+                       data-question-id="{{ $question['detail_id'] ?? '' }}" 
+                       data-gap="2"
+                       placeholder="Javobni shu yerga yozing...">
+                <span class="focus-border"></span>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
 
         {{-- Esse --}}
         @if($question['type'] == 'esse')
@@ -201,40 +201,39 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Har bir savol blokini topamiz
-    document.querySelectorAll('.row.g-3.mt-2').forEach(block => {
-        const input1 = block.querySelector('input[name^="question1_"]');
-        const input2 = block.querySelector('input[name^="question2_"]');
-        const hidden = block.querySelector('input[type="hidden"][name^="question_"]');
-
-        if (input1 && input2 && hidden) {
-            function updateHiddenValue() {
-                const val1 = input1.value.trim();
-                const val2 = input2.value.trim();
-
-                // Ikkalasini bitta stringga birlashtiramiz
-                hidden.value = `${val1}${val1 && val2 ? ' | ' : ''}${val2}`;
-                // ✅ Konsol uchun kuzatish
-                console.log(`Hidden field (${hidden.name}) → ${hidden.value}`);
-            }
-
-            // Har safar yozilganda yangilansin
-            input1.addEventListener('input', updateHiddenValue);
-            input2.addEventListener('input', updateHiddenValue);
-
-            // Dastlabki holatda ham to‘ldir
-            updateHiddenValue();
-        }
-    });
-});
-</script>
-
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
     let currentQuestion = 1;
     const totalQuestions = {{ count($final_test_questions) }};
     const isNewTest = {{ $isNewTest ? 'true' : 'false' }};
+    let answers;
+    let remainingTime;
+    let countdownInterval;
+
+    // Yangi test bo'lsa, localStorage'ni tozalash
+    if (isNewTest) {
+        localStorage.removeItem('quizAnswers');
+        localStorage.removeItem('remainingTime');
+        answers = {};
+        remainingTime = {{ $remaining_time }};
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        history.replaceState({}, document.title, newUrl);
+    } else {
+        let storedAnswers = localStorage.getItem('quizAnswers');
+        if (storedAnswers && storedAnswers !== 'null' && storedAnswers !== 'undefined') {
+            try {
+                answers = JSON.parse(storedAnswers);
+                Object.keys(answers).forEach(qId => {
+                    if (typeof answers[qId] === 'string') {
+                        answers[qId] = { answer: answers[qId], type: 'unknown' };
+                    }
+                });
+            } catch (e) {
+                answers = {};
+            }
+        } else {
+            answers = {{ json_encode($userAnswers ?: []) }};
+        }
+        remainingTime = localStorage.getItem('remainingTime') ? parseInt(localStorage.getItem('remainingTime')) : {{ $remaining_time }};
+    }
 
     // 🔐 Identifikator: avval student_final_test_id, bo'lmasa test_id
     const studentFinalTestId = {{ $student_final_test_id ?? 'null' }};
@@ -244,56 +243,11 @@ document.addEventListener("DOMContentLoaded", function() {
         : ((fallbackTestId !== null && fallbackTestId !== undefined && fallbackTestId !== 'null') ? parseInt(fallbackTestId, 10) : null);
 
     if (finalTestId === null || isNaN(finalTestId)) {
-        console.error('❌ finalTestId aniqlanmadi yoki noto‘g‘ri formatda.');
-        alert('Xatolik: test identifikatori topilmadi.');
-    }
-
-    // 🧪 Debug: RAM va localStorage holatini chiqarish
-    function debugDump(label = '') {
-        const ls = localStorage.getItem('quizAnswers');
-        let parsed = null;
-        try { parsed = JSON.parse(ls); } catch(e) {}
-        console.log(`🧪 ${label} | answers (RAM):`, answers);
-        console.log(`🧪 ${label} | localStorage (quizAnswers):`, parsed);
-    }
-
-    window.debugQuiz = function() {
-        const v = JSON.parse(localStorage.getItem('quizAnswers'));
-        console.log('🔎 debugQuiz():', v);
-        return v;
-    };
-
-    // ✅ Javoblarni xavfsiz yuklash – {qId: {answer, type}}
-    let answers;
-    let storedAnswers = localStorage.getItem('quizAnswers');
-    if (storedAnswers && storedAnswers !== 'null' && storedAnswers !== 'undefined') {
-        try {
-            answers = JSON.parse(storedAnswers);
-            Object.keys(answers).forEach(qId => {
-                if (typeof answers[qId] === 'string') {
-                    answers[qId] = { answer: answers[qId], type: 'unknown' };
-                }
-            });
-            console.log('📥 LocalStorage-dan yuklandi (quizAnswers):', answers);
-        } catch (e) {
-            console.warn('⚠️ LocalStorage parse xatosi, bo‘sh obyektga o‘tyapman:', e);
-            answers = {};
-        }
-    } else {
-        answers = {{ json_encode($userAnswers ?: []) }};
-        console.log('📥 Backend (userAnswers) dan yuklandi:', answers);
-    }
-
-    let remainingTime = localStorage.getItem('remainingTime') ? parseInt(localStorage.getItem('remainingTime')) : {{ $remaining_time }};
-    let countdownInterval;
-
-    // Yangi test bo'lsa localStorage tozalash
-    if (isNewTest) {
-        localStorage.removeItem('quizAnswers');
-        localStorage.removeItem('remainingTime');
-        answers = {};
-        remainingTime = {{ $remaining_time }};
-        console.log('🧹 isNewTest=true — localStorage tozalandi.');
+        Swal.fire({
+            title: 'Xatolik!',
+            text: 'Test identifikatori topilmadi.',
+            icon: 'error'
+        });
     }
 
     const submitBtn = document.getElementById('submit-test');
@@ -321,9 +275,15 @@ document.addEventListener("DOMContentLoaded", function() {
             remainingTime--;
             if (remainingTime <= 0) {
                 clearInterval(countdownInterval);
-                console.log('⏱️ Vaqt tugadi — auto submit!');
-                alert("Vaqt tugadi!");
-                submitFinalTest();
+                Swal.fire({
+                    title: 'Vaqt tugadi!',
+                    text: 'Test avtomatik yakunlanmoqda.',
+                    icon: 'warning',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    submitFinalTest();
+                });
             } else {
                 countdownElem.textContent = formatTime(remainingTime);
                 localStorage.setItem('remainingTime', remainingTime);
@@ -351,8 +311,9 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Matnli maydonlarni tiklash
+        // Matnli maydonlarni tiklash (double'larni o'tkazib yubor)
         questionElem.querySelectorAll('.answer-text, .answer-textarea').forEach(el => {
+            if (el.classList.contains('double-gap-input')) return;  // Double allaqachon tiklanadi
             const qId = el.dataset.questionId;
             if (answers[qId] && answers[qId].answer) {
                 el.value = answers[qId].answer;
@@ -360,6 +321,18 @@ document.addEventListener("DOMContentLoaded", function() {
                 el.value = '';
             }
         });
+
+        // Double gap tiklash (hidden yo'q, to'g'ridan-to'g'ri input'larga split)
+        const doubleInputs = questionElem.querySelectorAll('.double-gap-input');
+        if (doubleInputs.length === 2) {
+            const qId = doubleInputs[0].dataset.questionId;  // Ikkalasi bir xil
+            if (answers[qId] && answers[qId].answer) {
+                const parts = answers[qId].answer.split(' | ');  // " | " formatida ajrat
+                doubleInputs.forEach((input, idx) => {
+                    input.value = parts[idx] || '';
+                });
+            }
+        }
 
         // Type ni tiklash (unknown bo'lsa)
         questionElem.querySelectorAll('[data-question-id]').forEach(el => {
@@ -370,7 +343,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Navigatsiya status
+        // Navigatsiya status (double uchun input qId'ni ishlat, hidden yo'q)
         const navButtons = document.querySelectorAll('.rbt-pagination li a');
         navButtons.forEach(btn => {
             btn.parentElement.classList.remove('active');
@@ -398,8 +371,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (btnText) {
             btnText.textContent = currentQuestion === totalQuestions ? 'Testni tugatish' : 'Keyingi';
         }
-
-        console.log(`📄 showQuestion(${index}) — current answers:`, answers);
     }
 
     // ✅ Radio hodisasi
@@ -411,15 +382,50 @@ document.addEventListener("DOMContentLoaded", function() {
                 type: getTypeFromElement(this)
             };
             localStorage.setItem('quizAnswers', JSON.stringify(answers));
-            debugDump(`change:qId=${qId}`);
 
             const currentNavBtn = document.querySelector(`.rbt-pagination li a[data-index="${currentQuestion}"]`);
             if (currentNavBtn) currentNavBtn.classList.add('answered');
         });
     });
 
-    // ✅ Matn hodisasi
+    // ✅ Double Fill Gap hodisasi (sodda: hidden yo'q, faqat " | " birlashtirish)
+    document.querySelectorAll('.double-gap-input').forEach(el => {
+        el.addEventListener('input', function() {
+            const qId = this.dataset.questionId;  // Savol ID'si (ikkalasiga bir xil, masalan "474")
+            if (!qId) {
+                return;
+            }
+            
+            // Shu savol ichidagi ikkala input'ni topish
+            const input1 = document.querySelector(`.double-gap-input[data-question-id="${qId}"][data-gap="1"]`);
+            const input2 = document.querySelector(`.double-gap-input[data-question-id="${qId}"][data-gap="2"]`);
+            
+            if (input1 && input2) {
+                const answer1 = input1.value.trim() || '';
+                const answer2 = input2.value.trim() || '';
+                const combinedAnswer = answer1 + (answer1 && answer2 ? ' | ' : '') + answer2;  // "Salom | Qaleysan" yoki bo'sh
+
+                // Answers'ni yangila (faqat shu qId'ga, har doim string)
+                answers[qId] = {
+                    answer: combinedAnswer,  // Bo'sh bo'lsa ham ''
+                    type: 'fill_gap'  // Backend uchun
+                };
+                localStorage.setItem('quizAnswers', JSON.stringify(answers));
+
+                // Navigatsiya status
+                const currentNavBtn = document.querySelector(`.rbt-pagination li a[data-index="${currentQuestion}"]`);
+                if (currentNavBtn && combinedAnswer.trim()) {
+                    currentNavBtn.classList.add('answered');
+                } else if (currentNavBtn) {
+                    currentNavBtn.classList.remove('answered');
+                }
+            }
+        });
+    });
+
+    // ✅ Matn hodisasi (double'larni o'tkazib yubor)
     document.querySelectorAll('.answer-text, .answer-textarea').forEach(el => {
+        if (el.classList.contains('double-gap-input')) return;  // Double'ni o'z hodisasi hal qilsin
         el.addEventListener('input', function() {
             const qId = this.dataset.questionId;
             const value = this.value;
@@ -428,7 +434,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 type: getTypeFromElement(this)
             };
             localStorage.setItem('quizAnswers', JSON.stringify(answers));
-            debugDump(`input:qId=${qId}`);
 
             const currentNavBtn = document.querySelector(`.rbt-pagination li a[data-index="${currentQuestion}"]`);
             if (currentNavBtn) {
@@ -450,28 +455,28 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // ✅ Yuborish: talab qilingan formatga mos
+    // ✅ Yuborish: talab qilingan formatga mos (bo'sh answer'larni ham yubor, filter'dan o'tkazma)
     function submitFinalTest() {
         if (finalTestId === null || isNaN(finalTestId)) {
-            console.error('❌ finalTestId mavjud emas yoki noto‘g‘ri.');
-            alert('Xatolik: test identifikatori topilmadi.');
+            Swal.fire({
+                title: 'Xatolik!',
+                text: 'Test identifikatori topilmadi.',
+                icon: 'error'
+            });
             return;
         }
 
         const answersArray = Object.entries(answers)
-            .filter(([_, obj]) => obj && obj.answer !== '' && obj.answer !== null && obj.answer !== undefined)
             .map(([qId, obj]) => ({
                 id: parseInt(qId, 10),
                 type: obj.type || 'unknown',
-                answer: obj.answer
+                answer: obj.answer || ''  // Bo'sh bo'lsa ham yubor
             }));
 
         const payload = {
-            student_final_test_id: finalTestId, // ✅ Endi RAQAM sifatida!
+            student_final_test_id: finalTestId,
             answers: answersArray
         };
-
-        console.log('📦 Yuborilayotgan payload:', JSON.stringify(payload, null, 2));
 
         fetch("{{ route('user.submit.final.test') }}", {
             method: "POST",
@@ -489,15 +494,17 @@ document.addEventListener("DOMContentLoaded", function() {
             return res.json();
         })
         .then(data => {
-            console.log('✅ Server javobi:', data);
             localStorage.removeItem('quizAnswers');
             localStorage.removeItem('remainingTime');
             clearInterval(countdownInterval);
             window.location.href = "{{ route('user.final.test.results') }}";
         })
         .catch(err => {
-            console.error('❌ Yuborishda xatolik:', err);
-            alert('Xatolik yuz berdi: ' + (err.message || 'Noma\'lum xato'));
+            Swal.fire({
+                title: 'Xatolik yuz berdi!',
+                text: err.message || 'Noma\'lum xato',
+                icon: 'error'
+            });
         });
     }
 
@@ -508,7 +515,38 @@ document.addEventListener("DOMContentLoaded", function() {
             if (currentQuestion < totalQuestions) {
                 showQuestion(currentQuestion + 1);
             } else {
-                submitFinalTest();
+                // Javob berilmagan savollarni tekshirish
+                const unanswered = [];
+                for (let i = 1; i <= totalQuestions; i++) {
+                    const questionDiv = document.getElementById('question-' + i);
+                    if (!questionDiv) continue;
+                    const inputOrRadio = questionDiv.querySelector('[data-question-id]');
+                    const qId = inputOrRadio ? inputOrRadio.dataset.questionId : null;
+                    if (qId && (!answers[qId] || !answers[qId].answer || answers[qId].answer === '')) {
+                        unanswered.push(i);
+                    }
+                }
+
+                if (unanswered.length > 0) {
+                    Swal.fire({
+                        title: 'Javob berilmagan savollar mavjud!',
+                        text: `Testni yakunlamoqchimisiz? (Savollar: ${unanswered.join(', ')})`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ha, yakunlash',
+                        cancelButtonText: 'Yo\'q, davom etish'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            submitFinalTest();
+                        } else {
+                            showQuestion(unanswered[0]);
+                        }
+                    });
+                } else {
+                    submitFinalTest();
+                }
             }
         });
     }
@@ -519,12 +557,8 @@ document.addEventListener("DOMContentLoaded", function() {
         countdownElem.textContent = formatTime(remainingTime);
         startCountdown();
     }
-
-    debugDump('init');
 });
 </script>
-
-
 
 <!-- <script>
 document.querySelectorAll('.answer-option').forEach(opt => {

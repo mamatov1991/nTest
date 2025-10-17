@@ -435,7 +435,7 @@ class UserController extends Controller
         $final_test_id=session('student_final_test_id');
         $final_test_result_response = ApiService::getFromApiForUser("final-test/results");
         $final_test_result_data = collect(data_get($final_test_result_response, 'data', []))->firstWhere('id', $final_test_id);
-        dd($final_test_result_data);
+        // dd($final_test_result_data);
         return view('user.final-test-results', compact('userData', 'final_test_result_data'));
     }
 
