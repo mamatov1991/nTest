@@ -41,44 +41,81 @@
     @foreach ($final_test_questions as $index => $question)
         {{-- Choose Option --}}
         @if($question['type'] == 'choose_option')
-            <div class="question d-none" id="question-{{ $loop->iteration }}">
-                
-                    <div class="row mt--30">
-                    @if( Str::length($question['instruction']) > 25 )
-                    <p>{!! Str::length($question['instruction']) !!}</p>
-                    <div class="col-lg-12">
-                    <div class="instruction">
-                        {!! $question['instruction'] !!}        
-                    </div>
-                    </div>
-                    @endif
-                    
-                    <div class="col-lg-12">
-                    <div class="question-text mt--30">
-                    <span>{{ $loop->iteration }}.</span> 
-                    <span> {!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
-                    </div>
+<div class="question d-none" id="question-{{ $loop->iteration }}">
+    <div class="row mt--30">
+        @if(Str::length($question['instruction'] ?? '') > 50)
+            {{-- Uzun instruction uchun: chapda scrollable matn, o'ngda savol + variantlar --}}
+            <div class="row g-3 mt--10">
+                <div class="col-lg-8">
+                    <div class="rbt-single-quiz">
+                        <div style="height: 500px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+                            {!! $question['instruction'] !!}
+                        </div>
                     </div>
                 </div>
-                <div class="row g-3 mt-2">
-                    @foreach ($question['options'] ?? [] as $optIndex => $option)
-                        <div class="col-lg-12">
-                            <p class="rbt-checkbox-wrapper mb-2">
-                                <input class="form-check-input answer-option"
-       type="radio"
-       name="question_{{ $question['detail_id'] ?? $loop->parent->iteration }}"
-       data-question-id="{{ $question['detail_id'] ?? 'unknown' }}"
-       value="{{ $option['id'] ?? '' }}"
-       id="option-{{ $question['detail_id'] ?? $loop->parent->iteration }}-{{ $optIndex }}">
-                                <label class="form-check-label" for="option-{{ $question['detail_id'] ?? $loop->parent->iteration }}-{{ $optIndex }}">
-                                    {{ chr(65 + $optIndex) }}) {{ $option['body'] ?? 'Variant yo‘q' }}
-                                </label>
-                            </p>
+                <div class="col-lg-4 pl--20">
+                    <div class="rbt-single-quiz">
+                        <div class="question-text mt--30">
+                            <span>{{ $loop->iteration }}.</span>
+                            <span>{!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
+                            @if(!empty($question['image']))
+                            <img src="{{ asset('storage/' . $question['image']) }}" alt="Question Image">
+                            @endif
                         </div>
-                    @endforeach
+                        <div class="row g-3 mt-2">
+                            @foreach ($question['options'] ?? [] as $optIndex => $option)
+                                <div class="col-lg-12">
+                                    <p class="rbt-checkbox-wrapper mb-2">
+                                        <input class="form-check-input answer-option" type="radio" 
+                                               name="question_{{ $question['detail_id'] ?? $loop->parent->iteration }}" 
+                                               data-question-id="{{ $question['detail_id'] ?? 'unknown' }}" 
+                                               value="{{ $option['id'] ?? '' }}" 
+                                               id="option-{{ $question['detail_id'] ?? $loop->parent->iteration }}-{{ $optIndex }}">
+                                        <label class="form-check-label" for="option-{{ $question['detail_id'] ?? $loop->parent->iteration }}-{{ $optIndex }}">
+                                            {{ chr(65 + $optIndex) }}) {{ $option['body'] ?? 'Variant yo‘q' }}
+                                        </label>
+                                    </p>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @else
+            
+            <div class="col-lg-12">
+                <div class="question-text mt--30">
+                    <span>{{ $loop->iteration }}.</span>
+                    <span>{!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
+                    @if(!empty($question['image']))
+                    <img src="{{ asset('storage/' . $question['image']) }}" alt="Question Image">
+                    @endif
+
                 </div>
             </div>
         @endif
+    </div>
+    <div class="row g-3 mt-2">
+        {{-- Variantlar (uzun bo'lmasa) --}}
+        @if(Str::length($question['instruction'] ?? '') <= 50)
+            @foreach ($question['options'] ?? [] as $optIndex => $option)
+                <div class="col-lg-12">
+                    <p class="rbt-checkbox-wrapper mb-2">
+                        <input class="form-check-input answer-option" type="radio" 
+                               name="question_{{ $question['detail_id'] ?? $loop->parent->iteration }}" 
+                               data-question-id="{{ $question['detail_id'] ?? 'unknown' }}" 
+                               value="{{ $option['id'] ?? '' }}" 
+                               id="option-{{ $question['detail_id'] ?? $loop->parent->iteration }}-{{ $optIndex }}">
+                        <label class="form-check-label" for="option-{{ $question['detail_id'] ?? $loop->parent->iteration }}-{{ $optIndex }}">
+                            {{ chr(65 + $optIndex) }}) {{ $option['body'] ?? 'Variant yo‘q' }}
+                        </label>
+                    </p>
+                </div>
+            @endforeach
+        @endif
+    </div>
+</div>
+@endif
 
         {{-- Fill Gap --}}
         @if($question['type'] == 'fill_gap')

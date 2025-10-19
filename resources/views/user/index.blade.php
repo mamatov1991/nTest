@@ -50,18 +50,10 @@
 
 @section('script')
 <script>
-  // ---------- 1) MA'LUMOTLAR ----------
-  const subjects = ["Ona tili", "Matematika"];
-  const variants = ["1-variant", "2-variant", "3-variant", "4-variant"];
+  const subjects = @json(collect($userData['subjects'] ?? [])->pluck('name')->toArray());
+  const variants = @json(collect($final_test_result_data ?? [])->pluck('final_test.name')->unique()->toArray());
+  const scoresByVariant = @json($scoresByVariant);
 
-  const scoresByVariant = {
-    "1-variant": [89, 76],
-    "2-variant": [78, 88],
-    "3-variant": [84, 80],
-    "4-variant": [,35]
-  };
-
-  // ---------- 2) FANLARNI DATASETGA O‘ZGARTIRISH ----------
   const datasets = subjects.map((subject, idx) => {
     return {
       label: subject,
@@ -74,13 +66,12 @@
     };
   });
 
-  // ---------- 3) GRAFIKNI CHIZISH ----------
   const ctx = document.getElementById("scoresChart").getContext("2d");
   new Chart(ctx, {
     type: "line",
     data: {
-      labels: variants,   // X o‘qi = variantlar
-      datasets: datasets  // Har bir fan = alohida chiziq
+      labels: variants,
+      datasets: datasets
     },
     options: {
       responsive: true,
@@ -101,7 +92,7 @@
           labels: {
             font: {
               size: 16,
-              weight: "600"   // 🔹 Fanlar (legend) font-weight: 600
+              weight: "600"
             }
           }
         }
@@ -113,13 +104,13 @@
           title: { display: false, text: "Ball" },
           ticks: { 
             stepSize: 10,
-            font: { size: 16 }   // 🔹 Y o‘qi yozuvlari 16px
+            font: { size: 16 }      
           }
         },
         x: {
           title: { display: false, text: "Variantlar" },
           ticks: {
-            font: { size: 16 }   // 🔹 X o‘qi yozuvlari 16px
+            font: { size: 16 }   
           }
         }
       },
@@ -131,22 +122,4 @@
     }
   });
 </script>
-
-<!-- <script>
-    $.ajax({
-        url: 'https://api.ntest.uz/api/profile/me',
-        type: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + '{{ session('auth_token') }}'
-        },
-        success: function(response) {
-            console.log(response);
-            alert('Profile data: ' + JSON.stringify(response));
-        },
-        error: function(xhr, status, error) {
-            console.error('Error:', error);
-            alert('Failed to load profile');
-        }
-    });
-</script> -->
 @endsection

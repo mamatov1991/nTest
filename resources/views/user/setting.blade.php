@@ -32,19 +32,19 @@
                         <form action="#" class="rbt-profile-row rbt-default-form row row--15">
                                                 <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb--10">
                                                     <div class="rbt-form-group">
-                                                        <input id="firstname" type="text" placeholder="Ism *" value="Abdullaev" required>
+                                                        <input id="firstname" type="text" placeholder="Ism *" value="{{ $userData['surname'] }}" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb--10">
                                                     <div class="rbt-form-group">
-                                                        <input id="lastname" type="text" placeholder="Familya *" value="Abdulloh" required>
+                                                        <input id="lastname" type="text" placeholder="Familya *" value="{{ $userData['name'] }}" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb--20">
                                                     <div class="filter-select rbt-modern-select">
                                                         <select id="displayname" class="w-100">
                                                             <option disabled>Hudud (viloyat) *</option>
-                                                            <option selected>Andijon viloyati</option>
+                                                            <option selected>{{ $userData['region']['name'] }}</option>
                                                             <option>Buxoro viloyati</option>
                                                             <option>Samarqand viloyati</option>
                                                         </select>
@@ -54,7 +54,7 @@
                                                     <div class="filter-select rbt-modern-select">
                                                         <select id="displayname" class="w-100">
                                                             <option disabled>Tuman yoki shahar *</option>
-                                                            <option>Asaka tumani</option>                                                            
+                                                            <option selected>{{ $userData['district']['name'] }}</option>                                                            
                                                             <option>Buloqboshi tumani</option>
                                                             <option>Marxamat tumani</option>
                                                         </select>
@@ -64,7 +64,7 @@
                                                     <div class="filter-select rbt-modern-select">
                                                         <select id="displayname" class="w-100">
                                                             <option disabled>Maktab (yoki bitirgan maktabi) *</option>
-                                                            <option selected>14-maktab</option>
+                                                            <option selected>{{ $userData['school']['name'] }}</option>
                                                             <option>247-maktab</option>
                                                             <option>248-maktab</option>
                                                             <option>249-maktab</option>
@@ -74,7 +74,7 @@
                                                 <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb--20">
                                                     <div class="filter-select rbt-modern-select">
                                                         <select id="displayname" class="w-100">
-                                                            <option>Bitirgan</option>
+                                                            <option>{{ $userData['class_number'] }}-sinf</option>
                                                             <option disabled>Sinfi *</option>
                                                             <option>1-sinf</option>
                                                             <option>2-sinf</option>
@@ -85,9 +85,9 @@
                                                 <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb--20">
                                                 <div class="filter-select rbt-modern-select">
                                                     <select class="w-100" data-live-search="true" title="Fanlar *" multiple data-size="7" data-actions-box="true" data-selected-text-format="count > 5">
-                                                        <option selected>Ona tili</option>
-                                                        <option selected>Matematika</option>
-                                                        <option>Fizika</option>
+                                                     @foreach($userData['subjects'] as $subject)    
+                                                    <option selected>{{$subject['name']}}</option>
+                                                    @endforeach
                                                     </select>
                                                 </div>
                                             </div>
@@ -95,8 +95,14 @@
                                                     <div class="filter-select rbt-modern-select">
                                                         <select id="displayname" class="w-100">
                                                             <option disabled>Test tili *</option>
+                                                            @if ($userData['language'] == 'uz')
                                                             <option selected>O‘zbekcha</option>
-                                                            <option>Русский</option>
+                                                            <option value="ru">Русский</option>
+                                                            @elseif ($userData['language'] == 'ru')
+                                                            <option selected>Русский</option>
+                                                            <option value="uz">O‘zbekcha</option>
+                                                            @endif
+                                                            
                                                         </select>
                                                     </div>
                                                 </div>

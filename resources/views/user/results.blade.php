@@ -2,178 +2,174 @@
 
 @section('main')
 <div class="col-lg-9">
-                            <!-- Start Enrole Course  -->
-                            <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                                <div class="content">
-                                    <div class="section-title">
-                                        <h4 class="rbt-title-style-3">Natijalar</h4>
-                                    </div>
+    <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
+        <div class="content">
+            <div class="section-title">
+                <h4 class="rbt-title-style-3">Natijalar</h4>
+            </div>
 
-                                    <div class="rbt-dashboard-table table-responsive mobile-table-750">
-                                        <table class="rbt-table table table-borderless">
-                                            <thead>
-                                                <tr>
-                                                    <th>T/r</th>
-                                                    <th>Fanlar</th>
-                                                    <th>Variantlar</th>
-                                                    <th>Test</th>
-                                                    <th>Yozma ish</th>
-                                                    <th>Umumiy ball</th>
-                                                    <th>Daraja</th>
-                                                    <th>Sana</th>
-                                                    <th>Tavsiyalar</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td>Ona tili</td>
-                                                    <td>3-variant</td>
-                                                    <td>55</td>
-                                                    <td>62</td>
-                                                    <td>58</td>
-                                                    <td>B2</td>
-                                                    <td>19.09.2025</td>
-                                                    <td>
-  <a class="rbt-btn btn-xs bg-primary-opacity radius-round"
-     href="#"
-     title="Tavsiya"
-     role="button"
-     data-bs-toggle="modal"
-     data-bs-target="#exampleModal">
-    <i class="feather-eye pl--0"></i>
-  </a>
-</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td>Matematika</td>
-                                                    <td>1-variant</td>
-                                                    <td>43</td>
-                                                    <td>57</td>
-                                                    <td>50</td>
-                                                    <td>B1</td>
-                                                    <td>15.09.2025</td>
-                                                     <td>
-  <a class="rbt-btn btn-xs bg-primary-opacity radius-round"
-     href="#"
-     title="Tavsiya"
-     role="button"
-     data-bs-toggle="modal"
-     data-bs-target="#exampleModal">
-    <i class="feather-eye pl--0"></i>
-  </a>
-</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>3</td>
-                                                    <td>Ona tili</td>
-                                                    <td>2-variant</td>
-                                                    <td>62</td>
-                                                    <td>63</td>
-                                                    <td>63</td>
-                                                    <td>A1</td>
-                                                    <td>11.09.2025</td>
-                                                     <td>
-  <a class="rbt-btn btn-xs bg-primary-opacity radius-round"
-     href="#"
-     title="Tavsiya"
-     role="button"
-     data-bs-toggle="modal"
-     data-bs-target="#exampleModal">
-    <i class="feather-eye pl--0"></i>
-  </a>
-</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>4</td>
-                                                    <td>Ona tili</td>
-                                                    <td>1-variant</td>
-                                                    <td>55</td>
-                                                    <td>53</td>
-                                                    <td>54</td>
-                                                    <td>B2</td>
-                                                    <td>08.09.2025</td>
-                                                     <td>
-  <a class="rbt-btn btn-xs bg-primary-opacity radius-round"
-     href="#"
-     title="Tavsiya"
-     role="button"
-     data-bs-toggle="modal"
-     data-bs-target="#exampleModal">
-    <i class="feather-eye pl--0"></i>
-  </a>
-</td>
-                                                </tr>
+            <div class="rbt-dashboard-table table-responsive mobile-table-750">
+                <table class="rbt-table table table-borderless">
+                    <thead>
+                        <tr>
+                            <th>T/r</th>
+                            <th>Fanlar</th>
+                            <th>Variantlar</th>
+                            <th>Test</th>
+                            <th>Yozma ish</th>
+                            <th>Umumiy ball</th>
+                            <th>Daraja</th>
+                            <th>Sana</th>
+                            <th>Tavsiyalar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($final_test_result_data as $index => $test)
+                            @php
+                                $details = collect($test['details'] ?? []);
+                                $totalQuestions = $details->count();
+                                $correctAnswers = $details->where('is_correct', '1')->count();
+                                $testScore = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 0) : 0; 
 
-                                            </tbody>
+                                $writtenDetails = $details->whereIn('testable_type', ['esse', 'double_fill_gap']);
+                                $writtenScore = $writtenDetails->where('is_correct', '1')->count(); 
+                                $overallScore = $totalQuestions > 0 ? round((($correctAnswers + $writtenScore) / ($totalQuestions + $writtenDetails->count())) * 100, 0) : 0;
 
-                                        </table>
-                                    </div>
-                                    <div class="row">
+                                $level = 'A1';
+                                if ($overallScore >= 57 && $overallScore <= 65) $level = 'A2';
+                                elseif ($overallScore >= 66 && $overallScore <= 75) $level = 'B1';
+                                elseif ($overallScore >= 76 && $overallScore <= 85) $level = 'B2';
+                                elseif ($overallScore > 85) $level = 'C';
+
+                                $comments = $details->where('is_correct', '0')->pluck('comment')->filter()->values()->toArray();
+                                $commentsHtml = collect($comments)->map(fn($comment) => "<p class='mb--10'>{$comment}</p>")->implode('');
+                                $commentsHtml = $commentsHtml ?: '<p class="mb--10">Tavsiyalar mavjud emas.</p>';
+
+                                $date = $test['finished_at'] ?? 'N/A';
+                                $formattedDate = $date !== 'N/A' ? date('d.m.Y', strtotime($date)) : 'N/A';
+                            @endphp
+
+                            <tr data-test-id="{{ $test['id'] }}"
+                                data-fan="{{ e(data_get($test, 'final_test.subject.name', 'Noma\'lum fan')) }}"
+                                data-variant="{{ e(data_get($test, 'final_test.name', 'Noma\'lum variant')) }}"
+                                data-comments='@json($commentsHtml)'>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ data_get($test, 'final_test.subject.name', 'Noma\'lum fan') }}</td>
+                                <td>{{ data_get($test, 'final_test.name', 'Noma\'lum variant') }}</td>
+                                <td>{{ $testScore }}</td>
+                                <td>{{ $writtenScore }}</td>
+                                <td>{{ $overallScore }}</td>
+                                <td>{{ $level }}</td>
+                                <td>{{ $formattedDate }}</td>
+                                <td>
+                                    <a class="rbt-btn btn-xs bg-primary-opacity radius-round tavsiya-btn"
+                                       href="#" title="Tavsiya" role="button"
+                                       data-bs-toggle="modal" data-bs-target="#tavsiyaModal">
+                                        <i class="feather-eye pl--0"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Pagination --}}
+            <div class="row">
+                @if ($final_test_result_data->hasPages())
                     <div class="col-lg-12 mt--40">
                         <nav>
                             <ul class="rbt-pagination">
-                                <li><a href="#" aria-label="Previous"><i class="feather-chevron-left"></i></a></li>
-                                <li><a href="#">1</a></li>
-                                <li class="active"><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#" aria-label="Next"><i class="feather-chevron-right"></i></a></li>
+                                {{-- Previous --}}
+                                @if ($final_test_result_data->onFirstPage())
+                                    <li class="disabled"><span><i class="feather-chevron-left"></i></span></li>
+                                @else
+                                    <li><a href="{{ $final_test_result_data->previousPageUrl() }}"><i class="feather-chevron-left"></i></a></li>
+                                @endif
+
+                                {{-- Pages --}}
+                                @foreach ($final_test_result_data->getUrlRange(1, $final_test_result_data->lastPage()) as $page => $url)
+                                    @if ($page == $final_test_result_data->currentPage())
+                                        <li class="active"><a href="#">{{ $page }}</a></li>
+                                    @else
+                                        <li><a href="{{ $url }}">{{ $page }}</a></li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Next --}}
+                                @if ($final_test_result_data->hasMorePages())
+                                    <li><a href="{{ $final_test_result_data->nextPageUrl() }}"><i class="feather-chevron-right"></i></a></li>
+                                @else
+                                    <li class="disabled"><span><i class="feather-chevron-right"></i></span></li>
+                                @endif
                             </ul>
                         </nav>
                     </div>
-                </div>
-                                </div>
-                            </div>
-                            <!-- End Enrole Course  -->
-                        </div>
-                    </div>
-                </div>
+                @endif
             </div>
         </div>
     </div>
-    <!-- End Card Style -->
-    <div class="rbt-separator-mid">
-        <div class="container">
-            <hr class="rbt-separator m-0">
+</div>
+
+{{-- Modal --}}
+<div class="rbt-team-modal modal fade rbt-modal-default" id="tavsiyaModal" tabindex="-1" aria-labelledby="tavsiyaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tavsiyalar</h5>
+                <button type="button" class="rbt-round-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="feather-x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-content" class="mb--20" style="font-size:16px!important;"></div>
+                <div id="modal-comments"></div>
+                <p class="mt--40" style="color:#333; font-style:italic; font-size:16px; font-weight:600;">
+                    Sizning kelgusi ishlaringizda muvaffaqiyat tilaymiz!
+                </p>
+            </div>
         </div>
     </div>
+</div>
+@endsection
 
+@section('script')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modalEl = document.getElementById('tavsiyaModal');
+    const modalContent = document.getElementById('modal-content');
+    const modalComments = document.getElementById('modal-comments');
+    const tavsiyaBtns = document.querySelectorAll('.tavsiya-btn');
 
-    <div class="rbt-team-modal modal fade rbt-modal-default" id="exampleModal" tabindex="-1" aria-labelledby="exampleModal" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="rbt-round-btn" data-bs-dismiss="modal" aria-label="Close">
-                                <i class="feather-x"></i>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="inner">
-                                <div class="row g-5 row--30 align-items-center">
-                                    
-                                    <div class="col-lg-12">
-                                        <div class="rbt-team-details">
-                                            <div class="author-info">
-                                                <h4 class="title">Tavsiya</h4>
-                                                <span class="team-form">
-                                        <i class="feather-user"></i>
-                                        <span class="location" style="font-size: 16px!important;"><strong>Abdullaev Abdulloh</strong>, siz <strong>Ona tili va adabiyot</strong> fanidan milliy sertifikat bo‘yicha ishlagan <br><strong>1-variant</strong>ingiz bo‘yicha quyidagi tavsiyalarni bildiramiz:</span>
-                                                </span>
-                                            </div>
-                                            <p class="mb--10">Imlo qoidalarini yaxshi o‘zlashtiring;</p>
-                                            <p class="mb--10">Kelishiklar va olmoshlar mavzusini mustahkamlashingiz lozim;</p>
-                                            <p class="mb--10">Alisher Navoiy va Abdulla Qodiriyning asarlarini bir takrorlab oling.</p>
+    // Modal instance bitta marta yaratiladi
+    const modalInstance = new bootstrap.Modal(modalEl, {
+        backdrop: true,
+        keyboard: true
+    });
 
-                                            
-                                            <p class="mt--40" style="color: rgb(51, 51, 51); font-style: italic; font-size: 16; font-weight: 600;">Sizning kelgusi ishlaringizda muvaffaqiyat tilab qolamiz!</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="top-circle-shape"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    tavsiyaBtns.forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const row = this.closest('tr');
+            if (!row) return;
+
+            const fan = row.dataset.fan;
+            const variant = row.dataset.variant;
+            const commentsHtml = JSON.parse(row.dataset.comments || '""');
+
+            modalContent.innerHTML = `<strong>${fan}</strong> fanidan <strong>${variant}</strong> bo‘yicha tavsiyalar:`;
+            modalComments.innerHTML = commentsHtml;
+
+            // Modalni ko‘rsatamiz
+            modalInstance.show();
+        });
+    });
+
+    // Modal yopilganda kontentni tozalash
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        modalContent.innerHTML = '';
+        modalComments.innerHTML = '';
+    });
+});
+</script>
 @endsection

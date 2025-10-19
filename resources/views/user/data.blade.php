@@ -25,7 +25,7 @@
                                             <div class="rbt-profile-content b2">Hudud (viloyat):</div>
                                         </div>
                                         <div class="col-lg-8 col-md-8">
-                                            <div class="rbt-profile-content b2">Andijon viloyati</div>
+                                            <div class="rbt-profile-content b2">{{ $userData['region']['name'] }}</div>
                                         </div>
                                     </div>
                                     <!-- End Profile Row  -->
@@ -36,7 +36,7 @@
                                             <div class="rbt-profile-content b2">Tuman yoki shahar:</div>
                                         </div>
                                         <div class="col-lg-8 col-md-8">
-                                            <div class="rbt-profile-content b2">Asaka tumani</div>
+                                            <div class="rbt-profile-content b2">{{ $userData['district']['name'] }}</div>
                                         </div>
                                     </div>
                                     <!-- End Profile Row  -->
@@ -47,7 +47,7 @@
                                             <div class="rbt-profile-content b2">Maktab (yoki bitirgan maktabi):</div>
                                         </div>
                                         <div class="col-lg-8 col-md-8">
-                                            <div class="rbt-profile-content b2"> 17-maktab</div>
+                                            <div class="rbt-profile-content b2"> {{ $userData['school']['name'] }}</div>
                                         </div>
                                     </div>
                                     <!-- End Profile Row  -->
@@ -69,7 +69,11 @@
                                             <div class="rbt-profile-content b2">Fanlar: </div>
                                         </div>
                                         <div class="col-lg-8 col-md-8">
-                                            <div class="rbt-profile-content b2">Ona tili, Matematika</div>
+                                            <div class="rbt-profile-content b2">
+                                                @foreach($userData['subjects'] as $subject)
+                                                    {{ $subject['name'] }},
+                                                @endforeach
+                                            </div>
                                         </div>
                                     </div>
                                     <!-- End Profile Row  -->

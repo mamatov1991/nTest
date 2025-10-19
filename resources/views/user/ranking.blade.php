@@ -12,35 +12,27 @@
 
                                     <div class="advance-tab-button mb--30">
                                         <ul class="nav nav-tabs tab-button-style-2 justify-content-start" id="myTab-4" role="tablist">
+                                          @foreach($userData['subjects'] as $subject)
                                             <li role="presentation">
-                                                <a href="#" class="tab-button active" id="home-tab-4" data-bs-toggle="tab" data-bs-target="#home-4" role="tab" aria-controls="home-4" aria-selected="true">
-                                                    <span class="title">Ona tili</span>
+                                                <a href="#" class="tab-button @if($loop->first) active @endif" id="home-tab-{{$loop->index}}" data-bs-toggle="tab" data-bs-target="#home-{{$loop->index}}" role="tab" aria-controls="home-{{$loop->index}}" aria-selected="true">
+                                                    <span class="title">{{$subject['name']}}</span>
                                                 </a>
                                             </li>
-                                            <li role="presentation">
-                                                <a href="#" class="tab-button" id="profile-tab-4" data-bs-toggle="tab" data-bs-target="#profile-4" role="tab" aria-controls="profile-4" aria-selected="false">
-                                                    <span class="title">Matematika</span>
-                                                </a>
-                                            </li>
+                                          @endforeach
                                         </ul>
                                     </div>
 
                                     <div class="tab-content">
-                                        <div class="tab-pane fade active show" id="home-4" role="tabpanel" aria-labelledby="home-tab-4">
+                                        @foreach($userData['subjects'] as $subject)
+                                        <div class="tab-pane fade @if($loop->first) active show @endif" id="home-{{$loop->index}}" role="tabpanel" aria-labelledby="home-tab-{{$loop->index}}">
                                             <div class="row g-5 mb--30">
                                                 <div class="chart-wrap">
-    <canvas id="rankChart"></canvas>
+                                                  <p class="text-center mt-5">Jarayonda...</p>
+    <!-- <canvas id="rankChart"></canvas> -->
   </div>
                                     </div>
                                             </div>
-
-                                        <div class="tab-pane fade" id="profile-4" role="tabpanel" aria-labelledby="profile-tab-4">
-                                            <div class="row g-5">
-
-                                               
-<p class="text-center">Jarayonda...</p>
-                                            </div>
-                                        </div>
+@endforeach
                                     </div>
                                 </div>
                             </div>

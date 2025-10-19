@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Domains\Api\Services\ApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class UserController extends Controller
 {
@@ -27,10 +29,23 @@ class UserController extends Controller
         if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
         $response = ApiService::getFromApiForUser('profile/me');
         $userData = data_get($response, 'data', []);
+        $final_test_result_response = ApiService::getFromApiForUser("final-test/results");
+        $final_test_result_data = collect(data_get($final_test_result_response, 'data', []));
+        $scoresByVariant = [];
+        foreach ($final_test_result_data as $test) {
+        $variantName = data_get($test, 'final_test.name', 'Noma\'lum variant');
+        $score = data_get($test, 'score');  // null bo'lsa, qo'shilmaydi
+        if ($score !== null) {
+        if (!isset($scoresByVariant[$variantName])) {
+        $scoresByVariant[$variantName] = [];
+        }
+        $scoresByVariant[$variantName][] = (int)$score;  // Int ga aylantirish
+        }
+        }
         if(!$userData) {
             return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
         }
-        return view('user.index', compact('userData'));
+        return view('user.index', compact('userData', 'final_test_result_data', 'scoresByVariant'));
     }
 
     public function data()
@@ -46,17 +61,37 @@ class UserController extends Controller
     }
 
     public function results()
-    {
-        $user = $this->requireUserOrRedirect();
-        if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
+{
+    $user = $this->requireUserOrRedirect();
+    if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
 
-        $response = ApiService::getFromApiForUser('profile/me');
-        $userData = data_get($response, 'data', []);
-        if(!$userData) {
-            return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
-        }
-        return view('user.results', compact('userData'));
+    $response = ApiService::getFromApiForUser('profile/me');
+    $userData = data_get($response, 'data', []);
+    if (!$userData) {
+        return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
     }
+    $all = collect(data_get($final_test_result_response = ApiService::getFromApiForUser("final-test/results"), 'data', []));
+
+    $perPage = 10;
+    $page = Paginator::resolveCurrentPage() ?: 1;
+
+    $items = $all->slice(($page - 1) * $perPage, $perPage)->values();
+
+    $final_test_result_data = new LengthAwarePaginator(
+        $items,
+        $all->count(),
+        $perPage,
+        $page,
+        [
+            'path' => Paginator::resolveCurrentPath(),
+            'pageName' => 'page',
+        ]
+    );
+
+    $final_test_result_data->appends(request()->query());
+
+    return view('user.results', compact('userData', 'final_test_result_data'));
+}
 
     public function ranking()
     {
@@ -65,6 +100,7 @@ class UserController extends Controller
 
         $response = ApiService::getFromApiForUser('profile/me');
         $userData = data_get($response, 'data', []);
+
         if(!$userData) {
             return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
         }
@@ -78,10 +114,12 @@ class UserController extends Controller
 
         $response = ApiService::getFromApiForUser('profile/me');
         $userData = data_get($response, 'data', []);
+        $resp_tariffs = ApiService::getFromApi('site/tariffs');
+        $tariffs = $resp_tariffs['data'] ?? [];
         if(!$userData) {
             return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
         }
-        return view('user.invoice', compact('userData'));
+        return view('user.invoice', compact('userData', 'tariffs'));
     }
 
     public function setting()
@@ -151,6 +189,7 @@ class UserController extends Controller
 
         $test_types_response=ApiService::getFromApiForUser('final-test/types');
         $test_types=data_get($test_types_response, 'data', []);
+        $test_duration=collect($test_types)->firstWhere('id', $subjectId)['duration'] ?? null;
 
         $get_subject_response=ApiService::getFromApiForUser('test/subjects');
         $subject=data_get($get_subject_response, 'data', []);
@@ -165,7 +204,6 @@ class UserController extends Controller
 
         $response_final_tests = ApiService::getFromApiForUser("final-test/available-tests/{$subjectId}/{$testCategory}");
         $final_tests = data_get($response_final_tests, 'data', []);
-        
         // Foydalanuvchi tomonidan yuborilgan ma'lumotlarni olish
         $get_testType = $request->input('testType');
         $get_chapterId = $request->input('chapterId');
@@ -183,6 +221,7 @@ class UserController extends Controller
         
         // "Yakuniy" test uchun logika
         if ($get_testType === 'yakuniy') {
+            session()->put('test_duration', $test_duration);
             session()->put('current_final_test_id', $get_finalTestId);
             return redirect()->route('user.final.test.questions', ['finalTestId' => $get_finalTestId, 'subjectId' => $get_subjectId, 'new' => 1]);
         }
@@ -261,7 +300,8 @@ class UserController extends Controller
         if ($user instanceof \Illuminate\Http\RedirectResponse) {
         return $user;
         }
-
+// $token=session('auth_token');
+// dd($token);
         $finalTestId = session('current_final_test_id');
         $response = ApiService::getFromApiForUser('profile/me');
         $userData = data_get($response, 'data', []);
@@ -273,8 +313,7 @@ class UserController extends Controller
         $questionsKey = 'final_test_questions_' . $finalTestId . '_' . auth()->id();
         $apiResponse = ApiService::getFromApiForUser('final-test/start-test/' . $finalTestId);
         $all_final_test_params = data_get($apiResponse, 'data', []);
-        //dd($all_final_test_params);
-        // dd($all_final_test_params);
+
         if ($isNewTest || !session()->has($questionsKey)) {
         
         // dd($apiResponse);
@@ -293,15 +332,14 @@ class UserController extends Controller
         $userId = auth()->id();
         $answersKey = 'answers_' . $userId;
         $userAnswers = session($answersKey, []);
-
-        $time_limit = 2800;
+        $test_duration=session('test_duration');
+        $time_limit = $test_duration*60;
         $remaining_time = session('remaining_time', $time_limit);
 
         session([
         'student_final_test_id' => $student_final_test_id,
         'remaining_time' => $remaining_time,
         ]);
-
         $subject_name = session()->get('subjectName');
         $chapter_name = session()->get('chapterName');
 
@@ -426,6 +464,8 @@ class UserController extends Controller
         return $user;
         }
 
+// $token = session('auth_token');
+//         dd($token);
         $response = ApiService::getFromApiForUser('profile/me');
         $userData = data_get($response, 'data', []);
         if(!$userData) {
