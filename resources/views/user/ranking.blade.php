@@ -53,10 +53,7 @@
 
 @section('script')
 <script>
-    // -------- 1) Kiruvchi ma'lumotlar (o'zingizniki bilan almashtiring) --------
     const variants = ["1-variant", "2-variant", "3-variant", "4-variant"];
-
-    // Sizning ballaringiz (har variant uchun)
     const myScores = {
       "1-variant": 89,
       "2-variant": 78,
@@ -64,42 +61,29 @@
       "4-variant": 91
     };
 
-    // Guruhdagi (masalan 150 kishi) balllar: har bir variant uchun massiv.
-    // >>> Eslatma: bu yerga backenddan kelgan ro‘yxatni qo‘ying. Demo uchun random to‘ldirib turibmiz.
     const groupSize = 150;
     const groupScores = {};
     variants.forEach(v => {
-      // Demo: 60–100 oralig‘ida soxta balllar generatsiyasi
       const arr = Array.from({length: groupSize - 1}, () => Math.floor(60 + Math.random() * 41));
-      // Sizning balingizni ham ro‘yxatga qo‘shamiz (bor bo‘lsin)
       arr.push(myScores[v]);
       groupScores[v] = arr;
     });
-
-    // -------- 2) Rank hisoblash funksiyasi --------
-    // "competition" rank: sizdan baland balllar soni + 1
-    // "dense" rank: noyob yuqori balllar soni + 1 (xohlasangiz shuni yoqing)
-    const RANK_METHOD = "competition"; // "competition" | "dense"
+    const RANK_METHOD = "competition";
 
     function getRankAmong(scoresArray, myScore, method = RANK_METHOD) {
       if (!Array.isArray(scoresArray) || typeof myScore !== "number") return null;
-      // Katta -> kichik sort
       const sorted = [...scoresArray].sort((a, b) => b - a);
 
       if (method === "dense") {
         const uniqueDesc = [...new Set(sorted)];
         return uniqueDesc.findIndex(s => s <= myScore) + 1;
       } else {
-        // competition rank
         const higherCount = sorted.filter(s => s > myScore).length;
         return higherCount + 1;
       }
     }
-
-    // Har bir variant uchun sizning rankingizni hisoblaymiz
     const myRanks = variants.map(v => getRankAmong(groupScores[v], myScores[v]));
 
-    // -------- 3) Grafik --------
     const ctx = document.getElementById("rankChart").getContext("2d");
     new Chart(ctx, {
       type: "line",
@@ -127,7 +111,6 @@
           tooltip: {
             enabled: true,
             callbacks: {
-              // Tooltip: "1-variant — O‘rin: 7 / 150 (Ball: 89)"
               label: (ctx) => {
                 const v = ctx.label;
                 const rank = ctx.parsed.y;
@@ -146,10 +129,8 @@
         },
         scales: {
           y: {
-            // 1-o‘rin tepada bo‘lishi uchun teskari
             reverse: true,
             min: 1,
-            // max qiymatni eng katta guruh hajmiga moslash
             suggestedMax: Math.max(...Object.values(groupScores).map(a => a.length)),
             title: { display: true, text: "" },
             ticks: { stepSize: 1, font: { size: 16 } }

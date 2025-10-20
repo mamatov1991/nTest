@@ -136,8 +136,4 @@
             <hr class="rbt-separator m-0">
         </div>
     </div>
-    <script>
-        console.log('User Data Object:');
-        console.log({{ json_encode($userData) }}); // $userData ni JSON obyekt sifatida konsolga chiqarish
-    </script>
 @endsection

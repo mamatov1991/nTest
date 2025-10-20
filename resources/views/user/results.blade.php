@@ -141,7 +141,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const modalComments = document.getElementById('modal-comments');
     const tavsiyaBtns = document.querySelectorAll('.tavsiya-btn');
 
-    // Modal instance bitta marta yaratiladi
     const modalInstance = new bootstrap.Modal(modalEl, {
         backdrop: true,
         keyboard: true
@@ -160,12 +159,9 @@ document.addEventListener('DOMContentLoaded', function () {
             modalContent.innerHTML = `<strong>${fan}</strong> fanidan <strong>${variant}</strong> bo‘yicha tavsiyalar:`;
             modalComments.innerHTML = commentsHtml;
 
-            // Modalni ko‘rsatamiz
             modalInstance.show();
         });
     });
-
-    // Modal yopilganda kontentni tozalash
     modalEl.addEventListener('hidden.bs.modal', function () {
         modalContent.innerHTML = '';
         modalComments.innerHTML = '';

@@ -48,7 +48,7 @@
             <div class="row g-3 mt--10">
                 <div class="col-lg-8">
                     <div class="rbt-single-quiz">
-                        <div style="height: 500px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+                        <div class="instruction-text" style="height: 500px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
                             {!! $question['instruction'] !!}
                         </div>
                     </div>
@@ -59,7 +59,7 @@
                             <span>{{ $loop->iteration }}.</span>
                             <span>{!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
                             @if(!empty($question['image']))
-                            <img src="{{ asset('storage/' . $question['image']) }}" alt="Question Image">
+                            <img src="{{ asset('https://api.ntest.uz/storage/' . $question['image']) }}" alt="Question Image">
                             @endif
                         </div>
                         <div class="row g-3 mt-2">
@@ -88,7 +88,7 @@
                     <span>{{ $loop->iteration }}.</span>
                     <span>{!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
                     @if(!empty($question['image']))
-                    <img src="{{ asset('storage/' . $question['image']) }}" alt="Question Image">
+                    <img src="{{ asset('https://api.ntest.uz/storage/' . $question['image']) }}" alt="Question Image">
                     @endif
 
                 </div>
@@ -272,7 +272,6 @@ document.addEventListener("DOMContentLoaded", function() {
         remainingTime = localStorage.getItem('remainingTime') ? parseInt(localStorage.getItem('remainingTime')) : {{ $remaining_time }};
     }
 
-    // 🔐 Identifikator: avval student_final_test_id, bo'lmasa test_id
     const studentFinalTestId = {{ $student_final_test_id ?? 'null' }};
     const fallbackTestId = {{ $test_id ?? 'null' }};
     const finalTestId = (studentFinalTestId !== null && studentFinalTestId !== undefined && studentFinalTestId !== 'null')
@@ -291,21 +290,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
     const countdownElem = document.getElementById('countdown');
 
-    // ✅ Type ni aniqlash (DOM class lardan)
     function getTypeFromElement(el) {
         if (el.classList.contains('answer-option')) return 'choose_option';
         if (el.classList.contains('answer-text') || el.classList.contains('answer-textarea')) return 'fill_gap';
         return 'unknown';
     }
 
-    // Vaqt formatlash
-    function formatTime(seconds) {
+        function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    // Countdown
     function startCountdown() {
         if (!countdownElem) return;
         countdownInterval = setInterval(() => {
@@ -328,7 +324,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }, 1000);
     }
 
-    // Savolni ko'rsatish
     function showQuestion(index) {
         const questionElements = document.querySelectorAll('.question');
         if (!questionElements.length) return;
@@ -338,7 +333,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!questionElem) return;
         questionElem.classList.remove('d-none');
 
-        // Radio tiklash
         questionElem.querySelectorAll('.answer-option').forEach(opt => {
             const qId = opt.dataset.questionId;
             if (answers[qId] && answers[qId].answer === opt.value) {
@@ -348,9 +342,8 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Matnli maydonlarni tiklash (double'larni o'tkazib yubor)
         questionElem.querySelectorAll('.answer-text, .answer-textarea').forEach(el => {
-            if (el.classList.contains('double-gap-input')) return;  // Double allaqachon tiklanadi
+            if (el.classList.contains('double-gap-input')) return;
             const qId = el.dataset.questionId;
             if (answers[qId] && answers[qId].answer) {
                 el.value = answers[qId].answer;
@@ -359,19 +352,17 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Double gap tiklash (hidden yo'q, to'g'ridan-to'g'ri input'larga split)
         const doubleInputs = questionElem.querySelectorAll('.double-gap-input');
         if (doubleInputs.length === 2) {
-            const qId = doubleInputs[0].dataset.questionId;  // Ikkalasi bir xil
+            const qId = doubleInputs[0].dataset.questionId;
             if (answers[qId] && answers[qId].answer) {
-                const parts = answers[qId].answer.split(' | ');  // " | " formatida ajrat
+                const parts = answers[qId].answer.split(' | ');
                 doubleInputs.forEach((input, idx) => {
                     input.value = parts[idx] || '';
                 });
             }
         }
 
-        // Type ni tiklash (unknown bo'lsa)
         questionElem.querySelectorAll('[data-question-id]').forEach(el => {
             const qId = el.dataset.questionId;
             if (answers[qId] && answers[qId].type === 'unknown') {
@@ -380,7 +371,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Navigatsiya status (double uchun input qId'ni ishlat, hidden yo'q)
         const navButtons = document.querySelectorAll('.rbt-pagination li a');
         navButtons.forEach(btn => {
             btn.parentElement.classList.remove('active');
@@ -398,7 +388,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Joriy savol
         const navBtn = document.querySelector(`.rbt-pagination li a[data-index="${index}"]`);
         if (navBtn) {
             navBtn.parentElement.classList.add('active');
@@ -410,7 +399,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // ✅ Radio hodisasi
     document.querySelectorAll('.answer-option').forEach(opt => {
         opt.addEventListener('change', function() {
             const qId = this.dataset.questionId;
@@ -425,31 +413,27 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // ✅ Double Fill Gap hodisasi (sodda: hidden yo'q, faqat " | " birlashtirish)
     document.querySelectorAll('.double-gap-input').forEach(el => {
         el.addEventListener('input', function() {
-            const qId = this.dataset.questionId;  // Savol ID'si (ikkalasiga bir xil, masalan "474")
+            const qId = this.dataset.questionId;
             if (!qId) {
                 return;
             }
             
-            // Shu savol ichidagi ikkala input'ni topish
             const input1 = document.querySelector(`.double-gap-input[data-question-id="${qId}"][data-gap="1"]`);
             const input2 = document.querySelector(`.double-gap-input[data-question-id="${qId}"][data-gap="2"]`);
             
             if (input1 && input2) {
                 const answer1 = input1.value.trim() || '';
                 const answer2 = input2.value.trim() || '';
-                const combinedAnswer = answer1 + (answer1 && answer2 ? ' | ' : '') + answer2;  // "Salom | Qaleysan" yoki bo'sh
+                const combinedAnswer = answer1 + (answer1 && answer2 ? ' | ' : '') + answer2;
 
-                // Answers'ni yangila (faqat shu qId'ga, har doim string)
                 answers[qId] = {
-                    answer: combinedAnswer,  // Bo'sh bo'lsa ham ''
-                    type: 'fill_gap'  // Backend uchun
+                    answer: combinedAnswer,
+                    type: 'fill_gap'
                 };
                 localStorage.setItem('quizAnswers', JSON.stringify(answers));
 
-                // Navigatsiya status
                 const currentNavBtn = document.querySelector(`.rbt-pagination li a[data-index="${currentQuestion}"]`);
                 if (currentNavBtn && combinedAnswer.trim()) {
                     currentNavBtn.classList.add('answered');
@@ -460,9 +444,8 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // ✅ Matn hodisasi (double'larni o'tkazib yubor)
     document.querySelectorAll('.answer-text, .answer-textarea').forEach(el => {
-        if (el.classList.contains('double-gap-input')) return;  // Double'ni o'z hodisasi hal qilsin
+        if (el.classList.contains('double-gap-input')) return;
         el.addEventListener('input', function() {
             const qId = this.dataset.questionId;
             const value = this.value;
@@ -483,7 +466,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Navigatsiya tugmalari
     const navButtons = document.querySelectorAll('.rbt-pagination li a');
     navButtons.forEach(btn => {
         btn.addEventListener('click', function(e) {
@@ -492,7 +474,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // ✅ Yuborish: talab qilingan formatga mos (bo'sh answer'larni ham yubor, filter'dan o'tkazma)
     function submitFinalTest() {
         if (finalTestId === null || isNaN(finalTestId)) {
             Swal.fire({
@@ -507,7 +488,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .map(([qId, obj]) => ({
                 id: parseInt(qId, 10),
                 type: obj.type || 'unknown',
-                answer: obj.answer || ''  // Bo'sh bo'lsa ham yubor
+                answer: obj.answer || ''
             }));
 
         const payload = {
@@ -545,14 +526,12 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Submit tugmasi
     if (submitBtn) {
         submitBtn.addEventListener('click', function(e) {
             e.preventDefault();
             if (currentQuestion < totalQuestions) {
                 showQuestion(currentQuestion + 1);
             } else {
-                // Javob berilmagan savollarni tekshirish
                 const unanswered = [];
                 for (let i = 1; i <= totalQuestions; i++) {
                     const questionDiv = document.getElementById('question-' + i);
@@ -588,7 +567,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Dastlabki holat
     showQuestion(1);
     if (countdownElem) {
         countdownElem.textContent = formatTime(remainingTime);
@@ -596,12 +574,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
-
-<!-- <script>
-document.querySelectorAll('.answer-option').forEach(opt => {
-console.log('Question ID:', opt.dataset.questionId, 'Value:', opt.value);
-});
-</script> -->
 
 
 @endsection

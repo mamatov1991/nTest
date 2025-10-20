@@ -98,7 +98,6 @@
     let remainingTime;
     let countdownInterval;
 
-    // Yangi test bo'lsa, localStorage'ni tozalash
     if (isNewTest) {
     localStorage.removeItem('quizAnswers');
     localStorage.removeItem('remainingTime');
@@ -115,14 +114,12 @@
     const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
     const countdownElem = document.getElementById('countdown');
 
-    // Vaqtni formatlash
     function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    // Countdown funksiyasi
     function startCountdown() {
     if (!countdownElem) return;
     countdownInterval = setInterval(() => {
@@ -138,7 +135,6 @@
     }, 1000);
     }
 
-    // Savolni ko'rsatish
     function showQuestion(index) {
     const questionElements = document.querySelectorAll('.question');
     if (!questionElements.length) return;
@@ -172,25 +168,22 @@
     }
     }
 
-    // Javoblarni yig'ish
     const answerOptions = document.querySelectorAll('.answer-option');
     if (answerOptions.length > 0) {
     answerOptions.forEach(opt => {
     opt.addEventListener('change', function() {
     const qId = this.dataset.questionId;
     const value = this.value;
-    answers[qId] = value; // Har bir tanlovni alohida saqlash
+    answers[qId] = value;
     localStorage.setItem('quizAnswers', JSON.stringify(answers));
     const currentNavBtn = document.querySelector(`.rbt-pagination li a[data-index="${currentQuestion}"]`);
     if (currentNavBtn) {
     currentNavBtn.classList.add('answered');
     }
-    console.log('Updated answers:', answers); // Debug uchun
+    console.log('Updated answers:', answers);
     });
     });
     }
-
-    // Navigatsiya tugmalari
     const navButtons = document.querySelectorAll('.rbt-pagination li a');
     if (navButtons.length > 0) {
     navButtons.forEach(btn => {
@@ -200,8 +193,6 @@
     });
     });
     }
-
-    // Submit funksiyasi
     function submitTest() {
     const testId = {{ $test_id ?? 'null' }};
     if (!testId || isNaN(parseInt(testId))) {
@@ -212,10 +203,10 @@
     const payload = {
     test_id: parseInt(testId),
     answers: Object.keys(answers)
-    .filter(qId => answers[qId]) // faqat javob berilganlarini olamiz
+    .filter(qId => answers[qId])
     .map(qId => ({ 
-    id: parseInt(qId),      // question_id raqam
-    answer: answers[qId]    // option_id string (masalan: "68d3d5094b7d1")
+    id: parseInt(qId),
+    answer: answers[qId]
     }))
     };
 
@@ -225,7 +216,7 @@
     return;
     }
 
-    console.log('Payload:', payload); // Debug uchun
+    console.log('Payload:', payload);
 
     fetch("{{ route('user.submit.test') }}", {
     method: "POST",
@@ -264,7 +255,6 @@
     });
     }
 
-    // Submit tugmasi
     if (submitBtn) {
     submitBtn.addEventListener('click', function(e) {
     e.preventDefault();
@@ -303,18 +293,11 @@
     });
     }
 
-    // Dastlabki holatni o'rnatish
     showQuestion(1);
     countdownElem.textContent = formatTime(remainingTime);
     startCountdown();
     });
     </script>
-
-    <!-- <script>
-    document.querySelectorAll('.answer-option').forEach(opt => {
-    console.log('Question ID:', opt.dataset.questionId, 'Value:', opt.value);
-    });
-    </script> -->
 
 
     @endsection

@@ -39190,3 +39190,7 @@ line-height: 46px!important;
 .instruction p {
   margin-bottom: 8px!important;
 }
+
+.instruction-text p{
+  margin-bottom: 10px!important;
+}

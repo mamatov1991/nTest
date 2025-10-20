@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const resp = await fetch(url, {
         method: 'GET',
-        mode: 'cors', // 👈 CORS so'rovini ruxsat berish
+        mode: 'cors',
         headers: {
           'Accept': 'application/json',
           'X-Requested-With': 'XMLHttpRequest'
@@ -358,15 +358,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // ✅ MUVAFFAQIYATLI ALERT — OK BOSILGANDA REDIRECT
-    @if(session('success'))
+        @if(session('success'))
         Swal.fire({
             title: 'Muvaffaqiyatli!',
             text: '{{ session('success') }}',
             icon: 'success',
             confirmButtonText: 'OK',
-            allowOutsideClick: false, // tashqariga bosib yopib bo'lmaydi
-            allowEscapeKey: false     // Esc tugmasi bilan yopib bo'lmaydi
+            allowOutsideClick: false,
+            allowEscapeKey: false
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = "{{ route('login') }}";
@@ -374,7 +373,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     @endif
 
-    // ❌ XATOLIK ALERT
     @if(session('error'))
         Swal.fire({
             title: 'Xatolik!',
@@ -383,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function () {
             confirmButtonText: 'OK',
             timer: 5000,
             timerProgressBar: true,
-            showConfirmButton: true // OK tugmasi ko'rinsin
+            showConfirmButton: true
         });
     @endif
 });

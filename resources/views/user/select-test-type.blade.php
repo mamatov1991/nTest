@@ -103,7 +103,6 @@ $(function () {
         noneSelectedText: 'Tanlanmagan'
     });
 
-    // testCategory o‘zgarganda AJAX orqali chapters va final_tests ni olib kelamiz
     $('#testCategory').on('changed.bs.select', function () {
         let testCategory = $(this).val();
         let subjectId = "{{ $subjectId }}";
@@ -113,7 +112,6 @@ $(function () {
             method: 'GET',
             data: { testCategory: testCategory },
             success: function (response) {
-                // Chapters select tozalash va yangilash
                 let $chapterSelect = $('#childSelect_chapter');
                 $chapterSelect.empty().append('<option disabled selected>Bo‘limni tanlang *</option>');
                 response.chapters.forEach(ch => {
@@ -121,7 +119,6 @@ $(function () {
                 });
                 $chapterSelect.selectpicker('refresh');
 
-                // Final tests select tozalash va yangilash
                 let $finalSelect = $('#childSelect_final_test');
                 $finalSelect.empty().append('<option disabled selected>Variantni tanlang *</option>');
                 response.final_tests.forEach(ft => {
@@ -132,7 +129,6 @@ $(function () {
         });
     });
 
-    // testType bo‘yicha select ko‘rinishini boshqarish
     $('#testType').on('changed.bs.select', function () {
         let val = $(this).val();
         if (val === 'bolim') {

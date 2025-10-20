@@ -70,7 +70,7 @@ class UserController extends Controller
     if (!$userData) {
         return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
     }
-    $all = collect(data_get($final_test_result_response = ApiService::getFromApiForUser("final-test/results"), 'data', []));
+    $all = collect(data_get($final_test_result_response = ApiService::getFromApiForUser("final-test/results"), 'data', []))->sortByDesc('id')->values();
 
     $perPage = 10;
     $page = Paginator::resolveCurrentPage() ?: 1;
@@ -189,6 +189,7 @@ class UserController extends Controller
 
         $test_types_response=ApiService::getFromApiForUser('final-test/types');
         $test_types=data_get($test_types_response, 'data', []);
+        // dd($test_types);
         $test_duration=collect($test_types)->firstWhere('id', $subjectId)['duration'] ?? null;
 
         $get_subject_response=ApiService::getFromApiForUser('test/subjects');
