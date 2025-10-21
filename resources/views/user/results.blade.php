@@ -49,6 +49,7 @@
                                 $formattedDate = $date !== 'N/A' ? date('d.m.Y', strtotime($date)) : 'N/A';
                             @endphp
 
+
                             <tr data-test-id="{{ $test['id'] }}"
                                 data-fan="{{ e(data_get($test, 'final_test.subject.name', 'Noma\'lum fan')) }}"
                                 data-variant="{{ e(data_get($test, 'final_test.name', 'Noma\'lum variant')) }}"
@@ -72,6 +73,9 @@
                         @endforeach
                     </tbody>
                 </table>
+                @if(empty($test))
+                            <p class="text-center">Natija mavjud emas.</p>
+@endif
             </div>
 
             {{-- Pagination --}}

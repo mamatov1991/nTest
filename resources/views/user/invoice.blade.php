@@ -31,8 +31,8 @@
                                                 <div class="rbt-dashboard-table table-responsive mobile-table-750">
                                                     @php
                                                     $tarifreja=0;
-                                                    foreach($tariffs as $tariff){
-                                                    if($tariff['is_active'] == 1){
+                                                    foreach($my_tariffs as $tariff){
+                                                    if($tariff['is_active'] == true){
                                                         $tarifreja=1;
                                                     }
                                                     }
@@ -51,22 +51,66 @@
                                             </thead>
 
                                             <tbody>
-                                                @foreach($tariffs as $tariff)
-                                                @if($tariff['is_active'] == 1)          
+                                                @foreach($my_tariffs as $tariff_rejalari)         
                                                 <tr>
                                                     <th>{{$loop->iteration}}</th>
-                                                    <td>{{$tariff['name']}}</td>
-                                                    <td>{{$tariff['subjects']}}</td>
-                                                    <td>{{$tariff['price']}}</td>
-                                                    <td>31.10.2025</td>
-                                                    <td><span
-                                                            class="rbt-badge-5 bg-color-success-opacity color-success">Faol</span>
+                                                    <td>{{$tariff_rejalari['tariff']['name']}}</td>
+                                                    <td>{{$tariff_rejalari['tariff']['subjects']}}</td>
+                                                    <td>{{$tariff_rejalari['tariff']['total_price']}}</td>
+                                                    <td>{{$tariff_rejalari['end_at']}}</td>
+                                                    <td>
+                                                        @if($tariff_rejalari['is_active'] == true)
+                                                        <span class="rbt-badge-5 bg-color-success-opacity color-success">Faol</span>
+                                                        @else
+                                                        <span class="rbt-badge-5 bg-color-danger-opacity color-danger">Faol emas</span>
+                                                        @endif
                                                     </td>
                                                 </tr>
-                                                @endif
                                             @endforeach
                                             </tbody>
                                         </table>
+                                        @else
+                                        <div class="cart-table table-responsive">
+                                            <p class="text-center">Platforma imkoniyatidan to‘liq foydalanish uchun quyidagi tariflardan birini tanlang!</p>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="pro-title">Ta’riflar</th>
+                                            <th class="pro-price">Narxi</th>
+                                            <th class="pro-quantity">Fanlar</th>
+                                            <th class="pro-subtotal">Umumiy narxi</th>
+                                            <th class="pro-remove">To‘lov</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                @foreach($tariffs as $tariff)
+                                @php
+                                // Fanlar sonini aniqlaymiz
+                                $subjectCount = count($userData['subjects'] ?? []);
+                                // Umumiy narxni hisoblaymiz
+                                $totalPrice = $tariff['price'] * $subjectCount;
+                                @endphp
+
+                                <tr>
+                                <td class="pro-title"><a href="#">{{ $tariff['name'] }}</a></td>
+                                <td class="pro-price"><span>{{ number_format($tariff['price'], 0, '', ' ') }} so‘m</span></td>
+                                <td class="pro-price">
+                                <span>
+                                @foreach($userData['subjects'] as $subject)
+                                {{ $loop->last ? $subject['name'] : $subject['name'] . ',' }}
+                                @endforeach
+                                </span>
+                                </td>
+                                <td class="pro-subtotal">
+                                <span>{{ number_format($totalPrice, 0, '', ' ') }} so‘m</span>
+                                </td>
+                                <td><a class="rbt-btn btn-gradient" href="#">Xarid qilish</a></td>
+                                </tr>
+                                @endforeach
+
+                                        </tbody>
+                                    </table>
+                                </div>
                                         @endif
                                     </div>
                                     </div>

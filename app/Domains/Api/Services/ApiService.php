@@ -149,39 +149,6 @@ class ApiService
         }
     }
 
-    /**
-     * Profilni olish uchun yordamchi (agar kerak bo'lsa)
-     * Bu endpoiint bazening /profile/me kabi route-ga to'g'ri keladi.
-     */
-    // public static function getProfileMe(): array
-    // {
-    //     $base = rtrim(config('api.base_url', ''), '/');
-    //     $token = session('auth_token');
-
-    //     if (empty($token)) {
-    //         Log::warning('getProfileMe called without token');
-    //         return ['success' => false, 'message' => 'Not authenticated', 'status' => 401];
-    //     }
-
-    //     try {
-    //         $resp = Http::withToken($token)
-    //                     ->acceptJson()
-    //                     ->get("{$base}/profile/me");
-
-    //         if ($resp->failed()) {
-    //             Log::warning('getProfileMe failed', [
-    //                 'status' => $resp->status(),
-    //                 'body' => $resp->body(),
-    //             ]);
-    //         }
-
-    //         return $resp->json() ?? ['success' => false, 'message' => 'Empty response from API', 'status' => $resp->status()];
-    //     } catch (\Throwable $e) {
-    //         Log::error('getProfileMe Error: '.$e->getMessage());
-    //         return ['success' => false, 'message' => $e->getMessage(), 'status' => 500];
-    //     }
-    // }
-
     public static function getToApi(string $endpoint, array $headers = []): array
     {
         $base = rtrim(config('api.base_url', ''), '/');

@@ -116,37 +116,87 @@ class UserController extends Controller
         $userData = data_get($response, 'data', []);
         $resp_tariffs = ApiService::getFromApi('site/tariffs');
         $tariffs = $resp_tariffs['data'] ?? [];
+        $tariffs_id = collect($tariffs)->pluck('id')->toArray();
+        $resp_tariffs_payment = ApiService::postFromApiForUser('profile/buy-tariff/'.$tariffs_id[0]);
+        $tariffs_payment = $resp_tariffs_payment['data'] ?? [];
+        dd($tariffs_payment);
+        // $token = session('auth_token');
+        // dd($token);
+        $resp_my_tariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+        $my_tariffs = $resp_my_tariffs['data'] ?? [];
         if(!$userData) {
             return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
         }
-        return view('user.invoice', compact('userData', 'tariffs'));
+        return view('user.invoice', compact('userData', 'tariffs', 'my_tariffs'));
     }
 
-    public function setting()
-    {
-        $user = $this->requireUserOrRedirect();
-        if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
+   public function setting()
+{
+    $user = $this->requireUserOrRedirect();
+    if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
 
-        $response = ApiService::getFromApiForUser('profile/me');
-        $userData = data_get($response, 'data', []);
-        if(!$userData) {
-            return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
-        }
-        return view('user.setting', compact('userData'));
+    $response = ApiService::getFromApiForUser('profile/me');
+    $userData = data_get($response, 'data', []);
+    if (!$userData) {
+        return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
     }
+
+    $regionsResp  = ApiService::getFromApiForUser('school/regions');
+    $regions      = data_get($regionsResp, 'data', []);
+
+    $districts    = [];
+    if (!empty($userData['region']['id'])) {
+        $districtsResp = ApiService::getFromApiForUser('school/districts/'.$userData['region']['id']);
+        $districts     = data_get($districtsResp, 'data', []);
+    }
+
+    $schools = [];
+    if (!empty($userData['district']['id'])) {
+        $schoolsResp = ApiService::getFromApiForUser('school/schools/'.$userData['district']['id']);
+        $schools     = data_get($schoolsResp, 'data', []);
+    }
+
+    $subjectsResp = ApiService::getFromApiForUser('school/subjects');
+    $subjects     = data_get($subjectsResp, 'data', []);
+
+    return view('user.setting', compact('userData','regions','districts','schools','subjects'));
+}
 
     public function setting_post(Request $request)
-    {
-        $user = $this->requireUserOrRedirect();
-        if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
+{
+    $user = $this->requireUserOrRedirect();
+    if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
 
-        $response = ApiService::getFromApiForUser('profile/me');
-        $userData = data_get($response, 'data', []);
-        if(!$userData) {
-            return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
+    $data = $request->validate([
+        'name'         => ['required','string','max:255'],
+        'surname'      => ['required','string','max:255'],
+        'region_id'    => ['required','integer'],
+        'district_id'  => ['required','integer'],
+        'school_id'    => ['required','integer'],
+        'class_number' => ['required','string','max:10'],
+        'phone'        => ['nullable','string','max:20'], // <- o'zgardi
+        'language'     => ['required','in:uz,ru,en'],
+        'subjects'     => ['required','array'],
+        'subjects.*'   => ['integer'],
+    ]);
+
+    try {
+        $resp = ApiService::postFromApiForUser('profile/update', $data);
+        if (($resp['success'] ?? false) === true) {
+            return back()->with('success', 'Ma’lumotlar muvaffaqiyatli yangilandi.');
         }
-        return view('user.setting', compact('userData'));
+        $msg = $resp['message'] ?? 'Yangilashda xatolik.';
+        return back()->withInput()->withErrors(['api' => $msg])->with('error', $msg);
+
+    } catch (\Throwable $e) {
+        Log::error('profile update failed', ['e' => $e->getMessage()]);
+        return back()->withInput()
+            ->withErrors(['api' => 'Server bilan bog‘lanishda xatolik.'])
+            ->with('error', 'Server bilan bog‘lanishda xatolik.');
     }
+}
+
+
 
     public function getTestsByCategory(Request $request, $subjectId)
     {
