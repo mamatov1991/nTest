@@ -217,7 +217,7 @@
                                 </a>
                             </div>
 
-                            <p class="description mt--20">Fanlarni bo‘limlar, milliy sertifikat va oliy ta’lim <br>tashkilotlariga kirish uchun bilimlarni sinab ko‘rish <br>imkonini beruvchi onlyn test platformasi!
+                            <p class="description mt--20">Milliy sertifikat va attestasiya sinovlari talablari asosida <br> umumtaʼlim va pedagogik fanlar boʻyicha <br> bilim va koʻnikmalarni  sinab ko‘rish imkonini <br> beruvchi onlyn test platformasi!
                             </p>
 
                         </div>

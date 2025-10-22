@@ -84,13 +84,6 @@
                                     </thead>
                                     <tbody>
                                 @foreach($tariffs as $tariff)
-                                @php
-                                // Fanlar sonini aniqlaymiz
-                                $subjectCount = count($userData['subjects'] ?? []);
-                                // Umumiy narxni hisoblaymiz
-                                $totalPrice = $tariff['price'] * $subjectCount;
-                                @endphp
-
                                 <tr>
                                 <td class="pro-title"><a href="#">{{ $tariff['name'] }}</a></td>
                                 <td class="pro-price"><span>{{ number_format($tariff['price'], 0, '', ' ') }} so‘m</span></td>
@@ -102,9 +95,9 @@
                                 </span>
                                 </td>
                                 <td class="pro-subtotal">
-                                <span>{{ number_format($totalPrice, 0, '', ' ') }} so‘m</span>
+                                <span>{{ number_format($tariff['total_price'], 0, '', ' ') }} so‘m</span>
                                 </td>
-                                <td><a class="rbt-btn btn-gradient" href="#">Xarid qilish</a></td>
+                                <td><a class="rbt-btn btn-gradient" href="{{ $tariff['payment_link'] }}">Xarid qilish</a></td>
                                 </tr>
                                 @endforeach
 
@@ -141,7 +134,7 @@
                         </div>
 
                         <div class="pricing-btn">
-                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="#">
+                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="{{ $tariff['payment_link'] }}">
                                 <div class="icon-reverse-wrapper">
                                     <span class="btn-text">Xarid qilish</span>
                                     <span class="btn-icon"><i class="feather-arrow-right"></i></span>

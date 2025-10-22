@@ -56,7 +56,17 @@
                                     <h5 class="title">{{ $userData['surname'] }} {{ $userData['name'] }}</h5>
                                     <ul class="rbt-meta rbt-meta-white mt--5">
                                         <li><i class="feather-book"></i>{{count($userData['subjects'])}} ta fan tanlangan</li>
-                                        <li><i class="feather-list"></i>Tarif: bir oylik</li>
+                                        <li><i class="feather-list"></i>Tarif: 
+                                        @php
+                                            $tarif_status='Mavjud emas';
+                                            foreach($my_tariffs as $tariff){
+                                                if($tariff['is_active'] == true){
+                                                    $tarif_status=$tariff['tariff']['name'];
+                                                }
+                                            }
+                                            @endphp
+                                        {{$tarif_status}}
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -90,7 +100,7 @@
                                 </a>
                             </div>
 
-                            <p class="description mt--20">Fanlarni bo‘limlar, milliy sertifikat va oliy ta’lim <br>tashkilotlariga kirish uchun bilimlarni sinab ko‘rish <br>imkonini beruvchi onlyn test platformasi!
+                            <p class="description mt--20">Milliy sertifikat va attestasiya sinovlari talablari asosida <br> umumtaʼlim va pedagogik fanlar boʻyicha <br> bilim va koʻnikmalarni  sinab ko‘rish imkonini <br> beruvchi onlyn test platformasi!
                             </p>
 
                         </div>

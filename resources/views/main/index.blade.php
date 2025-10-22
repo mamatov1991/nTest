@@ -8,7 +8,7 @@
                 <div class="col-md-12">
                     <div class="inner text-start">
                         <h2 class="title">NTEST</h2>
-                        <p class="description">Bu fanlar kesimida o‘z bilimini mustaqil baholash platformasi.</p>
+                        <p class="description">Bu fanlar bo‘yicha bilim va ko‘nikmalarni mustaqil baholash platformasi.</p>
                         <div class="slider-btn rbt-button-group justify-content-start">
                             <a class="rbt-btn btn-border icon-hover color-white radius-round" href="#">
                                 <span class="btn-text">Video qo‘llanma</span>
@@ -36,7 +36,7 @@
                                 </span>
                                 <h6 class="card-title mt-4 mt-sm-0">Elektron testlar <br> bazasi</h6>
                             </div>
-                            <p class="description">Barcha fanlardan elektron testlar bazsi shakllantirib boriladi.</p>
+                            <p class="description">Fanlardan elektron testlar bazasi shakllantirib boriladi.</p>
                         </div>
                     </div>
 
@@ -47,9 +47,9 @@
                                 <span class="icon bg-color-primary">
                                     <img src="assets/images/icons/f-icon-02.png" alt="Banner Icon">
                                 </span>
-                                <h6 class="card-title mt-4 mt-sm-0">Natijalarni kuzatish <br> va tahlil</h6>
+                                <h6 class="card-title mt-4 mt-sm-0">Natijalarni kuzatish va <br>tahlil qilish </h6>
                             </div>
-                            <p class="description">Har bir foydalanuvchi o‘zi erishgan natijalarini kuzatib borishi.</p>
+                            <p class="description">Har bir foydalanuvchi fanlar bo‘yicha erishgan natijalarini kuzatib boradi.</p>
                         </div>
                     </div>
 
@@ -62,7 +62,7 @@
                                 </span>
                                 <h6 class="card-title mt-4 mt-sm-0">Tavsiya berish <br> imkoniyati</h6>
                             </div>
-                            <p class="description">Onlayn test yakuni bo‘yicha o‘zlashtirishi zarur bo‘zgan bilimlarni tavsiya etish.</p>
+                            <p class="description">Onlayn test natijasi asosida o‘zlashtirilishi zarur bo‘zgan bilimlar va ko‘nikmalar bo‘yicha tavsiyalar beriladi./p>
                         </div>
                     </div>
                 </div>

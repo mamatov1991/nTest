@@ -29,6 +29,8 @@ class UserController extends Controller
         if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
         $response = ApiService::getFromApiForUser('profile/me');
         $userData = data_get($response, 'data', []);
+        $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+        $my_tariffs    = $respMyTariffs['data'] ?? [];
         $final_test_result_response = ApiService::getFromApiForUser("final-test/results");
         $final_test_result_data = collect(data_get($final_test_result_response, 'data', []));
         $scoresByVariant = [];
@@ -45,26 +47,29 @@ class UserController extends Controller
         if(!$userData) {
             return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
         }
-        return view('user.index', compact('userData', 'final_test_result_data', 'scoresByVariant'));
+        return view('user.index', compact('userData', 'final_test_result_data', 'scoresByVariant', 'my_tariffs'));
     }
 
     public function data()
     {
         $user = $this->requireUserOrRedirect();
         if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
+        $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+        $my_tariffs    = $respMyTariffs['data'] ?? [];
         $response = ApiService::getFromApiForUser('profile/me');
         $userData = data_get($response, 'data', []);
         if(!$userData) {
             return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
         }
-        return view('user.data', compact('userData'));
+        return view('user.data', compact('userData', 'my_tariffs'));
     }
 
     public function results()
 {
     $user = $this->requireUserOrRedirect();
     if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
-
+    $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+    $my_tariffs    = $respMyTariffs['data'] ?? [];
     $response = ApiService::getFromApiForUser('profile/me');
     $userData = data_get($response, 'data', []);
     if (!$userData) {
@@ -90,7 +95,7 @@ class UserController extends Controller
 
     $final_test_result_data->appends(request()->query());
 
-    return view('user.results', compact('userData', 'final_test_result_data'));
+    return view('user.results', compact('userData', 'final_test_result_data', 'my_tariffs'));
 }
 
     public function ranking()
@@ -104,31 +109,60 @@ class UserController extends Controller
         if(!$userData) {
             return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
         }
-        return view('user.ranking', compact('userData'));
+        $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+        $my_tariffs    = $respMyTariffs['data'] ?? [];
+        return view('user.ranking', compact('userData', 'my_tariffs'));
     }
 
     public function invoice()
-    {
-        $user = $this->requireUserOrRedirect();
-        if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
-
-        $response = ApiService::getFromApiForUser('profile/me');
-        $userData = data_get($response, 'data', []);
-        $resp_tariffs = ApiService::getFromApi('site/tariffs');
-        $tariffs = $resp_tariffs['data'] ?? [];
-        $tariffs_id = collect($tariffs)->pluck('id')->toArray();
-        $resp_tariffs_payment = ApiService::postFromApiForUser('profile/buy-tariff/'.$tariffs_id[0]);
-        $tariffs_payment = $resp_tariffs_payment['data'] ?? [];
-        dd($tariffs_payment);
-        // $token = session('auth_token');
-        // dd($token);
-        $resp_my_tariffs = ApiService::getFromApiForUser('profile/my-tariffs');
-        $my_tariffs = $resp_my_tariffs['data'] ?? [];
-        if(!$userData) {
-            return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
-        }
-        return view('user.invoice', compact('userData', 'tariffs', 'my_tariffs'));
+{
+    $user = $this->requireUserOrRedirect();
+    if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
+    $response = ApiService::getFromApiForUser('profile/me');
+    $userData = data_get($response, 'data', []);
+    if (!$userData) {
+        return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
     }
+
+    $respTariffs = ApiService::getFromApi('site/tariffs');
+    $tariffs     = $respTariffs['data'] ?? [];
+    $tariffs = collect($tariffs)->map(function ($tariff) {
+        $tariffId = $tariff['id'] ?? null;
+        $paymentLink    = null;
+        $paymentMessage = null;
+
+        if ($tariffId) {
+            try {
+                $resp = ApiService::postFromApiForUser('profile/buy-tariff/' . $tariffId);
+                $data = $resp['data'] ?? $resp ?? [];
+                $paymentLink    = $data['payment_link'] ?? null;
+                $paymentMessage = $data['message']      ?? ($resp['message'] ?? null);
+                if (empty($paymentLink) && empty($paymentMessage)) {
+                    $paymentMessage = 'Link yaratilmagan';
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Tariff payment link error', [
+                    'tariff_id' => $tariffId,
+                    'error'     => $e->getMessage(),
+                ]);
+                $paymentMessage = 'Server bilan bog‘lanishda xatolik';
+            }
+        } else {
+            $paymentMessage = 'Tarif ID topilmadi';
+        }
+
+        return array_merge($tariff, [
+            'payment_link'    => $paymentLink,
+            'payment_message' => $paymentMessage,
+        ]);
+    })->values()->all();
+
+    $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+    $my_tariffs    = $respMyTariffs['data'] ?? [];
+
+    return view('user.invoice', compact('userData', 'tariffs', 'my_tariffs'));
+}
+
 
    public function setting()
 {
@@ -159,7 +193,10 @@ class UserController extends Controller
     $subjectsResp = ApiService::getFromApiForUser('school/subjects');
     $subjects     = data_get($subjectsResp, 'data', []);
 
-    return view('user.setting', compact('userData','regions','districts','schools','subjects'));
+    $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+    $my_tariffs    = $respMyTariffs['data'] ?? [];
+
+    return view('user.setting', compact('userData','regions','districts','schools','subjects', 'my_tariffs'));
 }
 
     public function setting_post(Request $request)
@@ -224,7 +261,8 @@ class UserController extends Controller
         if ($user instanceof \Illuminate\Http\RedirectResponse) {
             return $user;
         }
-        
+        $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+        $my_tariffs    = $respMyTariffs['data'] ?? [];
         // Yangi test tanlashdan oldin barcha oldingi test ma'lumotlarini tozalash
         session()->forget(['test_id', 'chapter_questions', 'remaining_time', 'quizAnswers', 'new_test', 'subjectName', 'chapterName']);
         $answersKey = 'answers_' . auth()->id();
@@ -277,7 +315,7 @@ class UserController extends Controller
             return redirect()->route('user.final.test.questions', ['finalTestId' => $get_finalTestId, 'subjectId' => $get_subjectId, 'new' => 1]);
         }
         
-        return view('user.select-test-type', compact('userData', 'chapters', 'test_types', 'final_tests', 'subjectName', 'subjectId'));
+        return view('user.select-test-type', compact('userData', 'chapters', 'test_types', 'final_tests', 'subjectName', 'subjectId', 'my_tariffs'));
     }
 
     public function test_questions(Request $request, $chapterId)
@@ -286,6 +324,8 @@ class UserController extends Controller
         if ($user instanceof \Illuminate\Http\RedirectResponse) {
         return $user;
         }
+        $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+        $my_tariffs    = $respMyTariffs['data'] ?? [];
 
         $chapterId = session('current_chapter_id');
         $response = ApiService::getFromApiForUser('profile/me');
@@ -341,7 +381,8 @@ class UserController extends Controller
         'test_id',
         'userAnswers',
         'remaining_time',
-        'isNewTest'
+        'isNewTest',
+        'my_tariffs'
         ));
     }
 
@@ -351,6 +392,8 @@ class UserController extends Controller
         if ($user instanceof \Illuminate\Http\RedirectResponse) {
         return $user;
         }
+        $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+        $my_tariffs    = $respMyTariffs['data'] ?? [];
 // $token=session('auth_token');
 // dd($token);
         $finalTestId = session('current_final_test_id');
@@ -403,7 +446,8 @@ class UserController extends Controller
         'student_final_test_id',
         'userAnswers',
         'remaining_time',
-        'isNewTest'
+        'isNewTest',
+        'my_tariffs'
         ));
     }
 
@@ -494,7 +538,8 @@ class UserController extends Controller
         if ($user instanceof \Illuminate\Http\RedirectResponse) {
         return $user;
         }
-
+        $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+        $my_tariffs    = $respMyTariffs['data'] ?? [];
         $response = ApiService::getFromApiForUser('profile/me');
         $userData = data_get($response, 'data', []);
         if(!$userData) {
@@ -505,7 +550,7 @@ class UserController extends Controller
         $chapter_result_response = ApiService::getFromApiForUser("test/chapter-test-history");
         $chapter_result_data = collect(data_get($chapter_result_response, 'data', []))->firstWhere('id', $chapter_test_id);
         // dd($chapter_result_data);
-        return view('user.test-results', compact('userData', 'chapter_result_data'));
+        return view('user.test-results', compact('userData', 'chapter_result_data', 'my_tariffs'));
     }
 
     public function final_test_results()
@@ -514,7 +559,8 @@ class UserController extends Controller
         if ($user instanceof \Illuminate\Http\RedirectResponse) {
         return $user;
         }
-
+        $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
+        $my_tariffs    = $respMyTariffs['data'] ?? [];
 // $token = session('auth_token');
 //         dd($token);
         $response = ApiService::getFromApiForUser('profile/me');
@@ -527,7 +573,7 @@ class UserController extends Controller
         $final_test_result_response = ApiService::getFromApiForUser("final-test/results");
         $final_test_result_data = collect(data_get($final_test_result_response, 'data', []))->firstWhere('id', $final_test_id);
         // dd($final_test_result_data);
-        return view('user.final-test-results', compact('userData', 'final_test_result_data'));
+        return view('user.final-test-results', compact('userData', 'final_test_result_data', 'my_tariffs'));
     }
 
     public function logout(Request $request)

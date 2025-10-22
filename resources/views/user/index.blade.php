@@ -17,12 +17,22 @@
                                                         
                                                         <div class="rbt-card-body">
                                                            
-                                                            <h4 class="rbt-card-title"><a href="/user/select-test-type/{{ $subject['id'] }}">{{$subject['name']}}</a>
+                                                            <h4 class="rbt-card-title">
+                                                              @if($userData['status'] == 'inactive' && $userData['is_demo'] == true)
+                                                              <a href="/user/invoice">{{$subject['name']}}</a>
+                                                              @else
+                                                              <a href="/user/select-test-type/{{ $subject['id'] }}">{{$subject['name']}}</a>
+                                                              @endif
                                                             </h4>
                                                             <div class="rbt-card-bottom">
+                                                              @if($userData['status'] == 'inactive' && $userData['is_demo'] == true)
+                                                                <a class="rbt-btn btn-sm bg-primary-opacity w-100 text-center" href="/user/invoice">Test ishlash</a>
+                                                              @else
                                                                 <a class="rbt-btn btn-sm bg-primary-opacity w-100 text-center" href="/user/select-test-type/{{ $subject['id'] }}">Test ishlash</a>
+                                                              @endif
                                                             </div>
                                                         </div>
+
                                                     </div>
                                                 </div>
                                                 <!-- End Single Subject  -->
