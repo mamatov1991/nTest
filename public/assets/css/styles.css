@@ -1342,7 +1342,7 @@ ul.rbt-dropdown-menu li .sub-menu li a, ul.rbt-dropdown-menu li a .right-icon, u
 }
 
 .card-bg-3 {
-  background: var(--color-card-3) !important;
+  background: #e5fce0!important;
 }
 
 .card-bg-4 {
@@ -20873,8 +20873,8 @@ span.transparent-button:hover i {
   display: block;
 }
 .brand-style-2 li a img {
-  max-width: 160px;
-  max-height: 30px;
+  max-width: 240px;
+  max-height: 100px;
 }
 @media only screen and (min-width: 768px) and (max-width: 991px) {
   .brand-style-2 li a img {
@@ -39194,3 +39194,4 @@ line-height: 46px!important;
 .instruction-text p{
   margin-bottom: 10px!important;
 }
+

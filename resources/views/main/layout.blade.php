@@ -11,6 +11,15 @@
     html {
   scroll-behavior: smooth;
 }
+.more-text {
+    display: none;
+  }
+  .toggle-link {
+    color: #0055c6;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: underline;
+  }
 </style>
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.png">
@@ -280,6 +289,15 @@
             <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
         </svg>
     </div>
+
+    <script>
+  function toggleText(el) {
+    const hiddenText = el.nextElementSibling;
+    const isVisible = hiddenText.style.display === 'inline';
+    hiddenText.style.display = isVisible ? 'none' : 'inline';
+    el.textContent = isVisible ? 'Batafsil' : 'Yopish';
+  }
+</script>
 
     <!-- JS
 ============================================ -->

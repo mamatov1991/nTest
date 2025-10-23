@@ -62,7 +62,7 @@
                                 </span>
                                 <h6 class="card-title mt-4 mt-sm-0">Tavsiya berish <br> imkoniyati</h6>
                             </div>
-                            <p class="description">Onlayn test natijasi asosida o‘zlashtirilishi zarur bo‘zgan bilimlar va ko‘nikmalar bo‘yicha tavsiyalar beriladi./p>
+                            <p class="description">Onlayn test natijasi asosida o‘zlashtirilishi zarur bo‘zgan bilimlar va ko‘nikmalar bo‘yicha tavsiyalar beriladi.</p>
                         </div>
                     </div>
                 </div>
@@ -166,8 +166,6 @@
 
                             <!-- End Feature List  -->
                         </div>
-
-                        
                     </div>
                 </div>
             </div>
@@ -220,6 +218,101 @@
                 <!-- End Single Pricing  -->
                  @endforeach
             </div>
+
+            <div class="row g-5 mb--60 mt--30">
+                <div class="col-lg-12 col-md-12 col-12">
+                    <div class="section-title text-center">
+                            <h2 class="title w-600">Tariflar</h2>
+                            </div>
+                </div>
+            </div>
+            <div class="swiper service-item-3-activation  rbt-arrow-between gutter-swiper-30">
+
+                <div class="swiper-wrapper">
+                    <!-- Start Single Card  -->
+                    <div class="swiper-slide">
+                        <div class="single-slide">
+                            <div class="rbt-service rbt-service-2 rbt-hover-02 bg-no-shadow card-bg-1">
+                                <div class="inner">
+                                    <div class="content1">
+                                        <h5 class="title"><a href="#">“Tekin” tarifi</a></h5>
+                                        <p style="text-align: justify; font-size: 16px;">
+                                        Ushbu tarif <strong>mutlaqo tekin</strong>. Bu har oyda <strong>bitta</strong> fandan
+                                        <strong>yakuniy diagnostik test</strong> topshirig‘idan <strong>bir bora</strong> foydalanish imkonini 
+                                        <span class="toggle-link" onclick="toggleText(this)">Batafsil...</span>
+                                        <span class="more-text"> beradi. Buning uchun telegrammdagi rasmiy kanalimizga a’zo bo‘lishingiz shart.</span>
+                                        </p>
+                                        <a class="transparent-button" href="#">Telegram kanalga a’zo bo‘lish<i><svg width="17" height="12" xmlns="http://www.w3.org/2000/svg"><g stroke="#27374D" fill="none" fill-rule="evenodd"><path d="M10.614 0l5.629 5.629-5.63 5.629"/><path stroke-linecap="square" d="M.663 5.572h14.594"/></g></svg></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Single Card  -->
+                    <!-- Start Single Card  -->
+                    <div class="swiper-slide">
+                        <div class="single-slide">
+                            <div class="rbt-service rbt-service-2 rbt-hover-02 bg-no-shadow card-bg-2">
+                                <div class="inner">
+                                    <div class="content1">
+                                        <h5 class="title"><a href="#">“Arzon” tarifi</a></h5>
+                                        <p style="text-align: justify; font-size: 16px;">
+                                        Ushbu tarifdan foydalanish <strong>narxlari quyida keltirilgan</strong>. Bunda o‘quvchi oy davomida fan bo‘yicha
+                                        milliy sertifikat va <span class="toggle-link" onclick="toggleText(this)">Batafsil...</span> <span class="more-text">attestatsiya sinovlari talablari asosida <strong>yakuniy diagnostik test</strong> 
+                                        topshirig‘idan <strong>kamida 4 bora</strong> foydalana oladi. (Yozma ishlar <strong>oyda bir bora</strong> tekshirilib beriladi.)
+                                        Shuningdek, <strong>bob va bo‘limlar bo‘yicha test</strong> topshiriqlaridan <strong>cheksiz foydalanish</strong>
+                                        imkonini beradi. Yangiliklarni kuzatib borish uchun telegrammdagi rasmiy kanalimizga a’zo bo‘ling.</span>
+                                        </p>
+                                        <a class="transparent-button" href="#">Telegram kanalga a’zo bo‘lish<i><svg width="17" height="12" xmlns="http://www.w3.org/2000/svg"><g stroke="#27374D" fill="none" fill-rule="evenodd"><path d="M10.614 0l5.629 5.629-5.63 5.629"/><path stroke-linecap="square" d="M.663 5.572h14.594"/></g></svg></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Single Card  -->
+                    <!-- Start Single Card  -->
+                    <div class="swiper-slide">
+                        <div class="single-slide">
+                            <div class="rbt-service rbt-service-2 rbt-hover-02 bg-no-shadow card-bg-3">
+                                <div class="inner">
+                                    <div class="content1">
+                                        <h5 class="title"><a href="#">“Qiymat” tarifi</a></h5>
+                                        <p style="text-align: justify; font-size: 16px;">
+                                        Ushbu tarifdan foydalanish <strong>narxlarini admin bilan bog‘lanib bilishingiz mumkin</strong>. Bunda o‘quvchiga oy davomida
+                                        fan <span class="toggle-link" onclick="toggleText(this)">Batafsil...</span> <span class="more-text"> bo‘yicha milliy sertifikat va attestatsiya sinovlari talablari asosida <strong>yakuniy diagnostik test</strong>
+                                        va <strong>bob/bo‘limlar bo‘yicha test topshiriqlaridan cheksiz foydalanish</strong> imkonini beradi.
+                                        Shuningdek, yozma ishlar <strong>oyda 4 bor</strong> tekshirib beriladi. Yangiliklarni kuzatib borish uchun
+                                        telegrammdagi rasmiy kanalimizga a’zo bo‘ling.</span>
+                                        </p>
+                                        <a class="transparent-button" href="#">Telegram kanalga a’zo bo‘lish<i><svg width="17" height="12" xmlns="http://www.w3.org/2000/svg"><g stroke="#27374D" fill="none" fill-rule="evenodd"><path d="M10.614 0l5.629 5.629-5.63 5.629"/><path stroke-linecap="square" d="M.663 5.572h14.594"/></g></svg></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- End Single Card  -->
+                </div>
+                
+
+                <div class="rbt-swiper-arrow rbt-arrow-left">
+                    <div class="custom-overfolow">
+                        <i class="rbt-icon feather-arrow-left"></i>
+                        <i class="rbt-icon-top feather-arrow-left"></i>
+                    </div>
+                </div>
+
+                <div class="rbt-swiper-arrow rbt-arrow-right">
+                    <div class="custom-overfolow">
+                        <i class="rbt-icon feather-arrow-right"></i>
+                        <i class="rbt-icon-top feather-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <p style="text-align: center; font-size: 16px; margin-top: 20px;"><strong>Eslatma!</strong> Platformamiz imkoniyatidan foydalanishingiz bizning o‘quvchimiz va yuqoridagi shartlar asosida
+xizmatlarimizdan foydalanishga roziligingizni anglatadi.</p>
+
         </div>
     </div>
 
@@ -354,6 +447,16 @@
         </div>
         <!-- End Event Area  -->
 
+        <div class="mt--80 mb--60">
+                    <div class="rbt-brand-title-wrap">
+                        <h5 class="rbt-brand-title w-600 text-center mb-0">Homiylar va hamkorlar</h5>
+                    </div>
+                    <ul class="brand-list brand-style-2 justify-content-start justify-content-lg-between mt--30">
+                        <li><a href="#"><img src="assets/images/brand/talim-xabarlari.png" alt="Brand Image"></a></li>
+                    </ul>
+                </div>
+                <!-- Start Brand -->
+
 
     <div class="rbt-separator-mid">
         <div class="container">
@@ -361,3 +464,4 @@
         </div>
     </div>
 @endsection
+
