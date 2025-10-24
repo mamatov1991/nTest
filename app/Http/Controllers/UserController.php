@@ -126,42 +126,36 @@ class UserController extends Controller
 
     $respTariffs = ApiService::getFromApi('site/tariffs');
     $tariffs     = $respTariffs['data'] ?? [];
-    $tariffs = collect($tariffs)->map(function ($tariff) {
-        $tariffId = $tariff['id'] ?? null;
-        $paymentLink    = null;
-        $paymentMessage = null;
-
-        if ($tariffId) {
-            try {
-                $resp = ApiService::postFromApiForUser('profile/buy-tariff/' . $tariffId);
-                $data = $resp['data'] ?? $resp ?? [];
-                $paymentLink    = $data['payment_link'] ?? null;
-                $paymentMessage = $data['message']      ?? ($resp['message'] ?? null);
-                if (empty($paymentLink) && empty($paymentMessage)) {
-                    $paymentMessage = 'Link yaratilmagan';
-                }
-            } catch (\Throwable $e) {
-                \Log::error('Tariff payment link error', [
-                    'tariff_id' => $tariffId,
-                    'error'     => $e->getMessage(),
-                ]);
-                $paymentMessage = 'Server bilan bog‘lanishda xatolik';
-            }
-        } else {
-            $paymentMessage = 'Tarif ID topilmadi';
-        }
-
-        return array_merge($tariff, [
-            'payment_link'    => $paymentLink,
-            'payment_message' => $paymentMessage,
-        ]);
-    })->values()->all();
 
     $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
     $my_tariffs    = $respMyTariffs['data'] ?? [];
 
     return view('user.invoice', compact('userData', 'tariffs', 'my_tariffs'));
 }
+
+    public function buy_tariff($tariffId)
+{
+    $user = $this->requireUserOrRedirect();
+    if ($user instanceof \Illuminate\Http\RedirectResponse) return $user;
+
+    $response = ApiService::getFromApiForUser('profile/me');
+    $userData = data_get($response, 'data', []);
+
+    if (!$userData) {
+        return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
+    }
+    // $token = session('auth_token');
+    // dd($token);
+    $resBuyTariff = ApiService::postFromApiForUser('profile/buy-tariff/'.$tariffId);
+    $buy_tariff = $resBuyTariff['data'] ?? [];
+    
+    if (!empty($buy_tariff['payment_link'])) {
+        return redirect()->away($buy_tariff['payment_link']); 
+    }
+
+    return back()->with('error', 'To‘lov havolasi yaratilmagan.');
+}
+
 
 
    public function setting()

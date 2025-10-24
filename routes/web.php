@@ -49,5 +49,6 @@ Route::middleware(['web', 'auth.student'])
         Route::get('/final-test-submit', [UserController::class, 'submitFinalTest'])->name('submit.final.test');
         Route::get('/test-results',    [UserController::class, 'test_results'])->name('test.results');
         Route::get('/final-test-results',    [UserController::class, 'final_test_results'])->name('final.test.results');
+        Route::get('/buy-tariff/{tariffId}',[UserController::class, 'buy_tariff'])->name('buy.tariff')->where('tariffId', '[0-9]+');
         Route::get('/logout',          [UserController::class, 'logout'])->name('logout');
     });

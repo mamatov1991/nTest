@@ -71,7 +71,7 @@
         <!-- End Feature Area -->
 
         <!-- Start About nTest  -->
-        <div class="rbt-video-area bg-color-white rbt-section-gap overflow-hidden" style="margin-top: -50px;" id="loyiha-haqida">
+        <div class="rbt-video-area bg-color-white rbt-section-gap overflow-hidden" style="margin-top: -70px;" id="loyiha-haqida">
             <div class="container">
                 <div class="row mb--60 mb_sm--50">
                     <div class="col-lg-12">
@@ -174,52 +174,7 @@
   
         <div class="rbt-pricing-area bg-color-extra2 rbt-section-gap" id="narxlar">
         <div class="container">
-            <div class="row g-5 mb--60">
-                <div class="col-lg-12 col-md-12 col-12">
-                    <div class="section-title text-center">
-                            <h2 class="title w-600">Narxlar</h2>
-                            </div>
-                </div>
-            </div>
-            <div class="row g-5">
-            @foreach($tariffs as $tarif)
-                <!-- Start Single Pricing  -->
-                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-                    <div class="pricing-table style-2">
-                        <div class="pricing-header">
-                        @if($tarif['is_popular'] == 1)
-                        <div class="pricing-badge"><span>Ommabop</span></div>
-                        @endif
-                            <h3 class="title">{{ $tarif['name'] }}</h3>
-                            <span class="rbt-badge mb--35">{{ $tarif['description'] }}</span>
-                            <div class="price-wrap">
-                                <div class="yearly-pricing" style="display: none;">
-                                    <span class="amount">{{ number_format($tarif['price'], 0, '.', ' ') }}</span>
-                                    <span class="duration">/so‘m</span>
-                                </div>
-                                <div class="monthly-pricing" style="display: block;">
-                                    <span class="amount">{{ number_format($tarif['price'], 0, '.', ' ') }}</span>
-                                    <span class="duration">/so‘m</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pricing-btn">
-                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="/login">
-                                <div class="icon-reverse-wrapper">
-                                    <span class="btn-text">Xarid qilish</span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- End Single Pricing  -->
-                 @endforeach
-            </div>
-
-            <div class="row g-5 mb--60 mt--30">
+<div class="row g-5 mb--60">
                 <div class="col-lg-12 col-md-12 col-12">
                     <div class="section-title text-center">
                             <h2 class="title w-600">Tariflar</h2>
@@ -309,6 +264,53 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row g-5 mb--60 mt--30">
+                <div class="col-lg-12 col-md-12 col-12">
+                    <div class="section-title text-center">
+                            <h2 class="title w-600">Narxlar</h2>
+                            </div>
+                </div>
+            </div>
+            <div class="row g-5">
+            @foreach($tariffs as $tarif)
+                <!-- Start Single Pricing  -->
+                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                    <div class="pricing-table style-2">
+                        <div class="pricing-header">
+                        @if($tarif['is_popular'] == 1)
+                        <div class="pricing-badge"><span>Ommabop</span></div>
+                        @endif
+                            <h3 class="title">{{ $tarif['name'] }}</h3>
+                            <span class="rbt-badge mb--35">{{ $tarif['description'] }}</span>
+                            <div class="price-wrap">
+                                <div class="yearly-pricing" style="display: none;">
+                                    <span class="amount">{{ number_format($tarif['price'], 0, '.', ' ') }}</span>
+                                    <span class="duration">/so‘m</span>
+                                </div>
+                                <div class="monthly-pricing" style="display: block;">
+                                    <span class="amount">{{ number_format($tarif['price'], 0, '.', ' ') }}</span>
+                                    <span class="duration">/so‘m</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pricing-btn">
+                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="/login">
+                                <div class="icon-reverse-wrapper">
+                                    <span class="btn-text">Xarid qilish</span>
+                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Single Pricing  -->
+                 @endforeach
+            </div>
+
+            
 
             <p style="text-align: center; font-size: 16px; margin-top: 20px;"><strong>Eslatma!</strong> Platformamiz imkoniyatidan foydalanishingiz bizning o‘quvchimiz va yuqoridagi shartlar asosida
 xizmatlarimizdan foydalanishga roziligingizni anglatadi.</p>

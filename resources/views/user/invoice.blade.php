@@ -97,7 +97,7 @@
                                 <td class="pro-subtotal">
                                 <span>{{ number_format($tariff['total_price'], 0, '', ' ') }} so‘m</span>
                                 </td>
-                                <td><a class="rbt-btn btn-gradient" href="{{ $tariff['payment_link'] }}">Xarid qilish</a></td>
+                                <td><a class="rbt-btn btn-gradient" href="{{ route('user.buy.tariff', $tariff['id']) }}">Xarid qilish</a></td>
                                 </tr>
                                 @endforeach
 
@@ -134,7 +134,7 @@
                         </div>
 
                         <div class="pricing-btn">
-                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="{{ $tariff['payment_link'] }}">
+                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="/user/buy_tariff/{{ $tariff['id'] }}">
                                 <div class="icon-reverse-wrapper">
                                     <span class="btn-text">Xarid qilish</span>
                                     <span class="btn-icon"><i class="feather-arrow-right"></i></span>

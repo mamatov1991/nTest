@@ -73,6 +73,9 @@
                         @endforeach
                     </tbody>
                 </table>
+                @foreach($final_test_result_data as $test)
+                {{dd($test)}}
+                @endforeach
                 @if(empty($test))
                             <p class="text-center">Natija mavjud emas.</p>
 @endif
