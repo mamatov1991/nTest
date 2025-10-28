@@ -134,7 +134,7 @@
                         </div>
 
                         <div class="pricing-btn">
-                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="/user/buy_tariff/{{ $tariff['id'] }}">
+                            <a class="rbt-btn bg-primary-opacity hover-icon-reverse w-100" href="{{ route('user.buy.tariff', $tariff['id']) }}">
                                 <div class="icon-reverse-wrapper">
                                     <span class="btn-text">Xarid qilish</span>
                                     <span class="btn-icon"><i class="feather-arrow-right"></i></span>

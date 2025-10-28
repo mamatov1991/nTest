@@ -41,6 +41,7 @@
                                            value="{{ old('name', $userData['name'] ?? '') }}" required>
                                 </div>
                             </div>
+
                             <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb--10">
                                 <div class="rbt-form-group">
                                     <input id="surname" type="text" name="surname" placeholder="Familya *"
@@ -83,19 +84,10 @@
                             </div>
 
                             {{-- Maktab --}}
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb--20">
-                                <div class="filter-select rbt-modern-select">
-                                    <select id="school_id" name="school_id" class="w-100" required {{ empty($schools) ? 'disabled' : '' }}>
-                                        <option disabled {{ old('school_id', $userData['school']['id'] ?? null) ? '' : 'selected' }}>
-                                            Maktab (yoki bitirgan maktabi) *
-                                        </option>
-                                        @foreach($schools as $s)
-                                            <option value="{{ $s['id'] }}"
-                                                {{ (string)old('school_id', $userData['school']['id'] ?? '') === (string)$s['id'] ? 'selected' : '' }}>
-                                                {{ $s['name'] }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb--10">
+                                <div class="rbt-form-group">
+                                    <input id="school" type="text" name="school" placeholder="Maktab (yoki bitirgan maktabi) *"
+                                           value="{{ old('school', $userData['school'] ?? '') }}" required>
                                 </div>
                             </div>
 

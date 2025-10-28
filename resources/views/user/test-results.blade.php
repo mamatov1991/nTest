@@ -62,7 +62,7 @@
                                                     <td>{{ count($chapter_result_data['results'] ?? []) }} ta</td>
                                                     <td>{{ $correctCount }} ta</td>
                                                     <td>{{ $wrongCount }} ta</td>
-                                                    <td>{{ ($chapter_result_data['score'] ?? 0) * 10 }} ball</td>
+                                                    <td>{{ ($chapter_result_data['score'] ?? 0) * 20 }} ball</td>
                                                     <td>{{ \Carbon\Carbon::parse($chapter_result_data['start_at'])->format('d.m.Y') }}</td>
                                                 </tr>
 

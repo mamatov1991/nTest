@@ -105,13 +105,18 @@ class UserController extends Controller
 
         $response = ApiService::getFromApiForUser('profile/me');
         $userData = data_get($response, 'data', []);
-
+        $subjects = collect(data_get($userData, 'subjects', []))->pluck('id')->all();
+        $rankingData = [];
+        foreach ($subjects as $subjectId) {
+        $rankingResponse = ApiService::getFromApiForUser('profile/my-rating/' . $subjectId);
+        $rankingData[$subjectId] = data_get($rankingResponse, 'data', []);
+        }
         if(!$userData) {
             return redirect()->route('user.logout')->with('error', 'Iltimos, avval tizimga kiring.');
         }
         $respMyTariffs = ApiService::getFromApiForUser('profile/my-tariffs');
         $my_tariffs    = $respMyTariffs['data'] ?? [];
-        return view('user.ranking', compact('userData', 'my_tariffs'));
+        return view('user.ranking', compact('userData', 'my_tariffs', 'rankingData'));
     }
 
     public function invoice()
@@ -295,18 +300,21 @@ class UserController extends Controller
         $get_chapterName = collect($chapters)->firstWhere('id', $get_chapterId)['name'] ?? null;
         $get_subjectName = collect($subject)->firstWhere('id', $get_subjectId)['name'] ?? null;
         
+       if(!empty($get_chapterId)){
         if ($get_testType === 'bolim' && $get_chapterId) {
         session()->put('current_chapter_id', $get_chapterId);
         session()->put('subjectName', $get_subjectName);
         session()->put('chapterName', $get_chapterName);
         return redirect()->route('user.test.questions', ['chapterId' => $get_chapterId, 'new' => 1]);
         }
-        
+       }        
         // "Yakuniy" test uchun logika
+        if(!empty($get_finalTestId)){
         if ($get_testType === 'yakuniy') {
             session()->put('test_duration', $test_duration);
             session()->put('current_final_test_id', $get_finalTestId);
             return redirect()->route('user.final.test.questions', ['finalTestId' => $get_finalTestId, 'subjectId' => $get_subjectId, 'new' => 1]);
+        }
         }
         
         return view('user.select-test-type', compact('userData', 'chapters', 'test_types', 'final_tests', 'subjectName', 'subjectId', 'my_tariffs'));
@@ -340,8 +348,8 @@ class UserController extends Controller
         $chapter_questions = data_get($apiResponse, 'data.questions', []);
 
         // dd($chapter_questions_all_params);
-
-        $chapter_questions = array_slice($chapter_questions, 0, 10);
+        shuffle($chapter_questions);
+        $chapter_questions = array_slice($chapter_questions, 0, 5);
         session()->put('test_id', $test_id);
         session()->put($questionsKey, $chapter_questions);
         session()->forget(['remaining_time', 'answers_' . auth()->id()]);
@@ -355,7 +363,7 @@ class UserController extends Controller
         $answersKey = 'answers_' . $userId;
         $userAnswers = session($answersKey, []);
 
-        $time_limit = 1800;
+        $time_limit = 600;
         $remaining_time = session('remaining_time', $time_limit);
 
         session([

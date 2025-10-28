@@ -622,7 +622,6 @@ blockquote b {
 html {
   margin: 0;
   padding: 0;
-  font-size: 10px;
   scroll-behavior:smooth!important;
 }
 
@@ -8646,7 +8645,7 @@ input[type=radio] ~ label::before {
 input[type=radio] ~ label::after {
   width: 12px;
   height: 12px;
-  left: 2.5px;
+  left: 3px;
   background: #fff;
   border-radius: 50%;
   top: 5px;
@@ -10167,7 +10166,6 @@ Primary style
   display: block;
 }
 .logo a img {
-  max-height: 50px;
   object-fit: cover;
 }
 
@@ -13611,7 +13609,7 @@ fieldset:disabled {
 .rbt-btn i {
   padding-left: 6px;
   display: inline-block;
-  top: 2px;
+  top: 1px;
   position: relative;
   font-size: 17px;
 }
@@ -39138,43 +39136,7 @@ line-height: 46px!important;
   text-decoration: underline; /* <u> uchun stil */
 }
 
-    /* Popup ichidagi barcha elementlarga ta'sir qilish */
-.swal2-popup,
-.swal2-popup * {
-    /* Bu shrift o'lchamini har qanday global stil ustidan qo'yadi */
-    font-size: 16px !important; 
-    line-height: 1.4 !important;
-}
-
-/* Tugmalarga maxsus stil berish */
-.swal2-actions button {
-    /* Tugmalar ichidagi matn kattalashgach, paddingni ham moslashtiramiz */
-    font-size: 1em !important; 
-    padding: 0.6em 1.5em !important; 
-    min-width: 110px; /* Tugmalarni biroz kengaytirish */
-}
-
-/* Sarlavha (Javob berilmagan savollar...) stilini tiklash */
-.swal2-title {
-    font-size: 1.6em !important;
-    margin-top: 0.5em !important;
-}
-
-/* Ikonka (Sariq undov belgisi) */
-.swal2-icon {
-    width: 4em !important;
-    height: 4em !important;
-    margin: 1.5em auto 0.6em !important;
-}
-.swal2-icon .swal2-icon-content {
-    font-size: 2.5em !important;
-}
-
-/* Matn konteynerini tiklash */
-.swal2-html-container {
-    font-size: 1em !important;
-    margin: 1em 0 !important;
-}
+  
 .result-ques p{
   display: inline;
   margin: 0;

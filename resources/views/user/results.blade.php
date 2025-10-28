@@ -7,7 +7,6 @@
             <div class="section-title">
                 <h4 class="rbt-title-style-3">Natijalar</h4>
             </div>
-
             <div class="rbt-dashboard-table table-responsive mobile-table-750">
                 <table class="rbt-table table table-borderless">
                     <thead>
@@ -20,29 +19,57 @@
                             <th>Umumiy ball</th>
                             <th>Daraja</th>
                             <th>Sana</th>
-                            <th>Tavsiyalar</th>
+                            <th>
+                                Tavsiyalar
+                            </th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @foreach($final_test_result_data as $index => $test)
                             @php
                                 $details = collect($test['details'] ?? []);
                                 $totalQuestions = $details->count();
                                 $correctAnswers = $details->where('is_correct', '1')->count();
-                                $testScore = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 0) : 0; 
+                                $allTestScore = $test['score']; 
+                                $writtenDetails = $details->whereIn('testable_type', ['esse']);
+                                $writtenScore = $writtenDetails->where('is_correct', '1')->count();
+                                $testScore = $allTestScore-$writtenScore;
+                                $overallScore = $allTestScore / 2;
 
-                                $writtenDetails = $details->whereIn('testable_type', ['esse', 'double_fill_gap']);
-                                $writtenScore = $writtenDetails->where('is_correct', '1')->count(); 
-                                $overallScore = $totalQuestions > 0 ? round((($correctAnswers + $writtenScore) / ($totalQuestions + $writtenDetails->count())) * 100, 0) : 0;
+                                $level = '-';
 
-                                $level = 'A1';
-                                if ($overallScore >= 57 && $overallScore <= 65) $level = 'A2';
-                                elseif ($overallScore >= 66 && $overallScore <= 75) $level = 'B1';
-                                elseif ($overallScore >= 76 && $overallScore <= 85) $level = 'B2';
-                                elseif ($overallScore > 85) $level = 'C';
+                                if ($test['is_marked'] == 1) {
+                                    if ($overallScore >= 70 && $overallScore <= 76) {
+                                        $level = 'A+';
+                                    } elseif ($overallScore >= 65 && $overallScore < 70) {
+                                        $level = 'A';
+                                    } elseif ($overallScore >= 60 && $overallScore < 65) {
+                                        $level = 'B+';
+                                    } elseif ($overallScore >= 55 && $overallScore < 60) {
+                                        $level = 'B';
+                                    } elseif ($overallScore >= 50 && $overallScore < 55) {
+                                        $level = 'C+';
+                                    } elseif ($overallScore < 50) {
+                                        $level = 'C';
+                                    }
+                                }
 
-                                $comments = $details->where('is_correct', '0')->pluck('comment')->filter()->values()->toArray();
-                                $commentsHtml = collect($comments)->map(fn($comment) => "<p class='mb--10'>{$comment}</p>")->implode('');
+                                $comments = $details
+                                ->where('is_correct', '0')
+                                ->pluck('comment')
+                                ->filter()
+                                ->unique(function ($comment) {
+                                // har bir kommentni mazmuniga qarab yagona qilish
+                                return trim(mb_strtolower(strip_tags($comment)));
+                                })
+                                ->values()
+                                ->toArray();
+
+                                $commentsHtml = collect($comments)
+                                ->map(fn($comment) => "<p class='mb--10'>{$comment}</p>")
+                                ->implode('');
+
                                 $commentsHtml = $commentsHtml ?: '<p class="mb--10">Tavsiyalar mavjud emas.</p>';
 
                                 $date = $test['finished_at'] ?? 'N/A';
@@ -63,19 +90,20 @@
                                 <td>{{ $level }}</td>
                                 <td>{{ $formattedDate }}</td>
                                 <td>
-                                    <a class="rbt-btn btn-xs bg-primary-opacity radius-round tavsiya-btn"
-                                       href="#" title="Tavsiya" role="button"
-                                       data-bs-toggle="modal" data-bs-target="#tavsiyaModal">
-                                        <i class="feather-eye pl--0"></i>
-                                    </a>
+                                @if($test['is_marked'] == 1)
+                                <a href="#" class="rbt-btn btn-xs bg-primary-opacity radius-round tavsiya-btn" title="Tavsiya" role="button">
+                                <i class="feather-eye pl--0" style="top: 5px;"></i>
+                                </a>
+                                @else
+                                <p style="color: rgba(252, 252, 252, 1); font-size: 14px; text-align: center; text-indent: 0px!important; background-color: #eb9e10ff; padding: 5px; border-radius: 5px;">
+                                Test tekshirish jarayonida
+                                </p>
+                                @endif
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-                @foreach($final_test_result_data as $test)
-                {{dd($test)}}
-                @endforeach
                 @if(empty($test))
                             <p class="text-center">Natija mavjud emas.</p>
 @endif
@@ -118,61 +146,54 @@
     </div>
 </div>
 
-{{-- Modal --}}
-<div class="rbt-team-modal modal fade rbt-modal-default" id="tavsiyaModal" tabindex="-1" aria-labelledby="tavsiyaModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tavsiyalar</h5>
-                <button type="button" class="rbt-round-btn" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="feather-x"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="modal-content" class="mb--20" style="font-size:16px!important;"></div>
-                <div id="modal-comments"></div>
-                <p class="mt--40" style="color:#333; font-style:italic; font-size:16px; font-weight:600;">
-                    Sizning kelgusi ishlaringizda muvaffaqiyat tilaymiz!
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection
 
+@endsection
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css">
 @section('script')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const modalEl = document.getElementById('tavsiyaModal');
-    const modalContent = document.getElementById('modal-content');
-    const modalComments = document.getElementById('modal-comments');
-    const tavsiyaBtns = document.querySelectorAll('.tavsiya-btn');
+  const tavsiyaBtns = document.querySelectorAll('.tavsiya-btn');
 
-    const modalInstance = new bootstrap.Modal(modalEl, {
-        backdrop: true,
-        keyboard: true
+  tavsiyaBtns.forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      const row = this.closest('tr');
+      if (!row) return;
+
+      const fan = row.dataset.fan || 'Nomaʼlum fan';
+      const variant = row.dataset.variant || '-';
+      let commentsHtml = '';
+      try {
+        commentsHtml = JSON.parse(row.dataset.comments || '""') || '';
+      } catch {
+        commentsHtml = row.dataset.comments || '';
+      }
+      if (!commentsHtml) commentsHtml = '<p class="mb--10">Tavsiyalar mavjud emas.</p>';
+
+      Swal.fire({
+        title: `<strong>${fan}</strong> — Tavsiyalar`,
+        html: `
+          <div style="text-align:justify; font-size:16px; line-height:1.6;">
+            <p><strong>${fan}</strong> fanidan <strong>${variant}</strong> bo‘yicha tavsiyalar:</p>
+            <div style="margin-top:10px;">${commentsHtml}</div>
+            <p style="margin-top:25px; color:#333; font-style:italic; font-weight:600;">
+              Sizning kelgusi ishlaringizda muvaffaqiyat tilaymiz!
+            </p>
+          </div>
+        `,
+        icon: 'info',
+        width: '700px',
+        confirmButtonText: 'Yopish',
+        confirmButtonColor: '#0055c6',
+        showCloseButton: true
+      });
     });
-
-    tavsiyaBtns.forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            const row = this.closest('tr');
-            if (!row) return;
-
-            const fan = row.dataset.fan;
-            const variant = row.dataset.variant;
-            const commentsHtml = JSON.parse(row.dataset.comments || '""');
-
-            modalContent.innerHTML = `<strong>${fan}</strong> fanidan <strong>${variant}</strong> bo‘yicha tavsiyalar:`;
-            modalComments.innerHTML = commentsHtml;
-
-            modalInstance.show();
-        });
-    });
-    modalEl.addEventListener('hidden.bs.modal', function () {
-        modalContent.innerHTML = '';
-        modalComments.innerHTML = '';
-    });
+  });
 });
 </script>
+
+
+
 @endsection

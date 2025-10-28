@@ -5,8 +5,18 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>nTest - onlayn test topshirish platformasi</title>
     <meta name="robots" content="noindex, follow">
-    <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Milliy sertifikat va attestasiya imtihonlariga tayyorlaning! Ntest.uz — CHSB, ona tili va adabiyot hamda summativ baholash uchun onlayn test platformasi.">
+    <meta name="keywords" content="milliy sertifikat, attestasiya, malaka imtihoni, CHSB, onlayn test, ntest.uz, ntest, ntest platformasi, summativ baholash, baholash, ona tili va adabiyot, o‘qituvchi attestatsiyasi, test topshiriqlari, ta’lim platformasi, sertifikatlash tizimi">
+    <meta name="author" content="Ntest Platformasi">
+    <meta name="language" content="uz-UZ">
+    <meta name="theme-color" content="#0055C6">
+    <meta property="og:title" content="Ntest.uz — Milliy sertifikat, attestasiya va malaka imtihonlari uchun onlayn test platformasi">
+    <meta property="og:description" content="Ntest.uz — CHSB, ona tili va adabiyot hamda summativ baholash uchun onlayn test platformasi. Attestasiya va milliy sertifikat imtihonlariga tayyorlaning!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ntest.uz/">
+    <meta property="og:site_name" content="Ntest Platformasi">
+    <meta property="og:image" content="https://ntest.uz/assets/images/Logo-Main.png">
 <style>
     html {
   scroll-behavior: smooth;
@@ -217,7 +227,7 @@
                                 </a>
                             </div>
 
-                            <p class="description mt--20">Fanlarni bo‘limlar, milliy sertifikat va oliy ta’lim <br>tashkilotlariga kirish uchun bilimlarni sinab ko‘rish <br>imkonini beruvchi onlyn test platformasi!
+                            <p class="description mt--20">Milliy sertifikat va attestasiya sinovlari talablari asosida <br> umumtaʼlim va pedagogik fanlar boʻyicha bilim va <br> koʻnikmalarni onlayn sinab ko‘rish va mustaqil <br> rivojlantirish platformasi!
                             </p>
 
                         </div>
@@ -248,7 +258,7 @@
                         <div class="footer-widget">
                             <h5 class="ft-title">Biz bilan bog‘lanish</h5>
                             <ul class="ft-link">
-                                <li><span>Telefon:</span> <a href="#">(998) 99-835-41-82</a></li>
+                                <li><span>Telefon:</span> <a href="#">(998) 91-005-65-95</a></li>
                                 <li><span>E-mail:</span> <a href="mailto:info@ntest.uz">info@ntest.uz</a></li>
                                 <li><span>Web-sayt:</span> www.ntest.uz</li>
                             </ul>

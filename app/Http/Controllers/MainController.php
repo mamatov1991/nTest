@@ -45,7 +45,7 @@ class MainController extends Controller
         'phone'    => ['required', 'string', 'regex:/^\+998\d{9}$/'],
         'password' => ['required', 'string', 'min:6'],
     ]);
-
+    $data['phone'] = preg_replace('/[^0-9]/', '', $data['phone']);
     try {
         $resp = ApiService::postToApi('student/login', $data);
         if (($resp['success'] ?? false) === true) {
@@ -130,30 +130,44 @@ class MainController extends Controller
 
    public function registration_student(Request $request)
 {
-    $data = $request->validate([
-        'name'         => ['required','string','max:255'],
-        'surname'      => ['required','string','max:255'],
-        'region_id'    => ['required','integer'],
-        'district_id'  => ['required','integer'],
-        'school_id'    => ['required','integer'],
-        'class_number' => ['required','string','max:10'],
-        'phone'        => ['required','string','max:20'],
-        'language'     => ['required','in:uz,ru,en'],
-        'password'     => ['required','string','min:6'],
-        'subjects'     => ['required','array'],
-        'subjects.*'   => ['integer'],
-    ]);
+    try {
+        // Validatsiya
+        $data = $request->validate([
+            'name'         => ['required','string','max:255'],
+            'surname'      => ['required','string','max:255'],
+            'region_id'    => ['required','integer'],
+            'district_id'  => ['required','integer'],
+            'school'       => ['required','string','max:255'],
+            'class_number' => ['required','string','max:10'],
+            'phone'        => ['required','string','max:20'],
+            'language'     => ['required','in:uz,ru,en'],
+            'password'     => ['required','string','min:6'],
+            'subjects'     => ['required','array'],
+            'subjects.*'   => ['integer'],
+        ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        // Validatsiya xatolarida shu xabar chiqadi
+        return back()
+            ->withInput()
+            ->withErrors($e->errors())
+            ->with('error', 'Barcha bo‘limlarni to‘liq va to‘g‘ri to‘ldiring!');
+    }
+
+    // Telefon raqamdan faqat raqamlarni ajratamiz
+    $data['phone'] = preg_replace('/[^0-9]/', '', $data['phone']);
 
     try {
         $resp = ApiService::postToApi('student/register', $data);
 
-       if (($resp['success'] ?? false) === true) {
-    return back()->with('success', 'Siz ro‘yxatdan muvaffaqiyatli o‘tdingiz!');
-}
+        if (($resp['success'] ?? false) === true) {
+            return back()->with('success', 'Siz ro‘yxatdan muvaffaqiyatli o‘tdingiz!');
+        }
 
         $msg = $resp['message'] ?? 'Ro‘yxatdan o‘tishda xatolik.';
-        return back()->withInput()->withErrors(['api' => $msg])
-                     ->with('error', $msg);
+        return back()
+            ->withInput()
+            ->withErrors(['api' => $msg])
+            ->with('error', $msg);
 
     } catch (\Throwable $e) {
         Log::error('student register failed', ['e' => $e->getMessage()]);
@@ -164,6 +178,7 @@ class MainController extends Controller
             ->with('error', $errorMsg);
     }
 }
+
 
 public function news_view($id)
 {

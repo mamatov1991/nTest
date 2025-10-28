@@ -8,7 +8,7 @@
                 <div class="col-md-12">
                     <div class="inner text-start">
                         <h2 class="title">NTEST</h2>
-                        <p class="description">Bu fanlar bo‘yicha bilim va ko‘nikmalarni mustaqil baholash platformasi.</p>
+                        <p class="description">Bu ona tili va adabiyot fanlari bo‘yicha bilim va ko‘nikmalarni mustaqil baholash va rivojlantirish platformasi.</p>
                         <div class="slider-btn rbt-button-group justify-content-start">
                             <a class="rbt-btn btn-border icon-hover color-white radius-round" href="#">
                                 <span class="btn-text">Video qo‘llanma</span>
@@ -47,7 +47,7 @@
                                 <span class="icon bg-color-primary">
                                     <img src="assets/images/icons/f-icon-02.png" alt="Banner Icon">
                                 </span>
-                                <h6 class="card-title mt-4 mt-sm-0">Natijalarni kuzatish va <br>tahlil qilish </h6>
+                                <h6 class="card-title mt-4 mt-sm-0">Natijalarni kuzatish va <br> mustaqil o‘rganish</h6>
                             </div>
                             <p class="description">Har bir foydalanuvchi fanlar bo‘yicha erishgan natijalarini kuzatib boradi.</p>
                         </div>
@@ -86,8 +86,11 @@
                     </div>
                     <div class="col-xl-7 col-12 mt--50">
                         <div class="inner">
- <p style="text-indent: 40px; text-align: justify;">Loyiha oʻquvchi va oʻqituvchilarning umumtaʼlim va pedagogik fanlar boʻyicha bilim va koʻnikmalarini tashxislash, mavjud boʻshliqlarni aniqlab rivojlantiriladigan sohalar boʻyicha tavsiyalar berish, taʼlim tashkilotlarida monitoring sinovlarini oʻtkazib, taʼlim sifatiga taʼsir qiluvchi omillarni aniqlab berish hamda taʼlimni rivojlantirish boʻyicha konsalting xizmatlarini koʻrsatish maqsadida yoʻlga qoʻyilmoqda.</p>
+ <p style="text-indent: 40px; text-align: justify;">Loyihada test texnologiyalari yordamida oʻqitishni joriy etish, mustaqil oʻrganishni ragʻbatlantirish, o‘rganuvchilarni fanlardan o‘zlashtirishini sezilarli darajada oshirishga erishish maqsad qilingan. 
+Ushbu platforma o‘rganuvchilarning umumtaʼlim va pedagogik fanlar boʻyicha bilim va koʻnikmalarini tashxislash, mavjud boʻshliqlarni aniqlab rivojlantiriladigan sohalar boʻyicha tavsiyalar berish, taqdim etilgan manbalar yordamida mustaqil o‘qishini rag‘batlantirishga xizmat qiladi.
+</p>
                        
+<p style="text-indent: 40px; text-align: justify;"><b>Platformada bosqichma-bosqich quyidagi imkoniyatlar taqdim etiladi:</b></p>
                             <!-- Start Feature List  -->
 
                             <div class="rbt-feature-wrapper">
@@ -96,7 +99,7 @@
                                         <span>01</span>
                                     </div>
                                     <div class="feature-content">
-                                        <p class="feature-description">cheksiz testlardan foydalanish imkoniyati;</p>
+                                        <p class="feature-description">fanlar bo‘yicha darslik, o‘quv qo‘llanmalari va boshqa materiallarni taqdim etish;</p>
                                     </div>
                                 </div>
 
@@ -105,7 +108,7 @@
                                         <span>02</span>
                                     </div>
                                     <div class="feature-content">
-                                        <p class="feature-description">milliy sertifikat test sinovlari andozasida diagnostik testlardan foydalanish;</p>
+                                        <p class="feature-description">cheksiz testlardan foydalanish imkoniyati;</p>
                                     </div>
                                 </div>
 
@@ -114,7 +117,7 @@
                                         <span>03</span>
                                     </div>
                                     <div class="feature-content">
-                                        <p class="feature-description">attestatsiya test sinovlari andozasida diagnostik testlardan foydalanish;</p>
+                                        <p class="feature-description">milliy sertifikat test sinovlari andozasida diagnostik testlardan foydalanish;</p>
                                     </div>
                                 </div>
 
@@ -123,7 +126,7 @@
                                         <span>04</span>
                                     </div>
                                     <div class="feature-content">
-                                        <p class="feature-description">fan boʻlimlari boʻyicha bilim va koʻnikmalarini tashxislash;</p>
+                                        <p class="feature-description">attestatsiya test sinovlari andozasida diagnostik testlardan foydalanish;</p>
                                     </div>
                                 </div>
 
@@ -132,7 +135,7 @@
                                         <span>05</span>
                                     </div>
                                     <div class="feature-content">
-                                        <p class="feature-description">diagnostik test natijalari asosida rivojlantiriladigan sohalar boʻyicha tavsiyalar olish;</p>
+                                        <p class="feature-description">fan boʻlimlari boʻyicha bilim va koʻnikmalarini tashxislash;</p>
                                     </div>
                                 </div>
 
@@ -141,7 +144,7 @@
                                         <span>06</span>
                                     </div>
                                     <div class="feature-content">
-                                        <p class="feature-description">natijalaringizni boshqalar natijasi bilan solishtirish, oʻz darajangizni aniqlash;</p>
+                                        <p class="feature-description">diagnostik test natijalari asosida rivojlantiriladigan sohalar boʻyicha tavsiyalar olish;</p>
                                     </div>
                                 </div>
 
@@ -150,7 +153,7 @@
                                         <span>07</span>
                                     </div>
                                     <div class="feature-content">
-                                        <p class="feature-description">umumtaʼlim fanlari boʻyicha maktablarda monitoring sinovlarini tashkil etish;</p>
+                                        <p class="feature-description">natijalaringizni boshqalar natijasi bilan solishtirish, oʻz darajangizni aniqlash;</p>
                                     </div>
                                 </div>
 
@@ -159,7 +162,7 @@
                                         <span>08</span>
                                     </div>
                                     <div class="feature-content">
-                                        <p class="feature-description">ta’lim tashkilotlariga taʼlimni rivojlantirish boʻyicha konsalting xizmatlarini koʻrsatish.</p>
+                                        <p class="feature-description">umumtaʼlim fanlari boʻyicha ta’lim tashkilotlariga ichki monitoring sinovlarini tashkil etish va taʼlimni rivojlantirish boʻyicha konsalting xizmatlarini koʻrsatish.</p>
                                     </div>
                                 </div>
                             </div>

@@ -47,7 +47,7 @@
                                             <div class="rbt-profile-content b2">Maktab (yoki bitirgan maktabi):</div>
                                         </div>
                                         <div class="col-lg-8 col-md-8">
-                                            <div class="rbt-profile-content b2"> {{ $userData['school']['name'] }}</div>
+                                            <div class="rbt-profile-content b2"> {{ $userData['school'] }}</div>
                                         </div>
                                     </div>
                                     <!-- End Profile Row  -->

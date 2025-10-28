@@ -37,7 +37,7 @@
     @foreach ($chapter_questions as $index => $question)
     <div class="question d-none" id="question-{{ $loop->iteration }}">
     <div class="question-text mt--30">
-    <span>{{ $loop->iteration }}.</span> <span>{!!$question['id']!!} {!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
+    <span>{{ $loop->iteration }}.</span> <span>{!! $question['question'] ?? 'Savol matni yo‘q' !!}</span>
     </div>
     <div class="row g-3 mt-2">
     @foreach ($question['options'] ?? [] as $optIndex => $option)

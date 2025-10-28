@@ -14,6 +14,7 @@
                         <input id="name" type="text" name="name" placeholder="Ism *" required>
                         </div>
                         </div>
+
                         <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb--10">
                         <div class="rbt-form-group">
                         <input id="surname" type="text" name="surname" placeholder="Familya *" required>
@@ -39,11 +40,9 @@
                         </div>
                         </div>
 
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb--20">
-                        <div class="filter-select rbt-modern-select">
-                        <select id="school_id" name="school_id" class="w-100" required disabled>
-                        <option selected disabled>Maktabni tanlang *</option>
-                        </select>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb--10">
+                        <div class="rbt-form-group">
+                        <input id="school" type="text" name="school" placeholder="Maktab (yoki bitirgan maktabi) *" required>
                         </div>
                         </div>
 
@@ -99,7 +98,7 @@
 
                         <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                         <div class="rbt-checkbox">
-                        <input type="checkbox" id="rememberme" name="rememberme">
+                        <input type="checkbox" id="rememberme" name="rememberme" required>
                         <label for="rememberme">Barchasini to‘liq va to‘g‘ri to‘ldirdim</label>
                         </div>
                         </div>
